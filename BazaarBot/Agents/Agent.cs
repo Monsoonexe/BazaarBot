@@ -10,17 +10,19 @@ namespace BazaarBot.Agents
      */
     class Agent : BasicAgent
     {
+		/// <summary>
+		/// lowest possible price.
+		/// </summary>
+		public const double MIN_PRICE = 0.01;
+		public const double ProfitMarginFactor = 1.02f; //asks are fair prices:  costs + small profit
 
-	    public static double MIN_PRICE = 0.01;		//lowest possible price
-
-	    public Agent(int id, AgentData data) : base(id,data)
+		public Agent(int id, AgentData data) : base(id, data)
 	    {
 	    }
 
-
 		public override Offer? CreateBid(Market bazaar, String good, double limit)
 	    {
-            var bidPrice = 0;// determinePriceOf(good);  bids are now made "at market", no price determination needed
+            var bidPrice = 0;// determinePriceOf(good);  bids are now made "at market", no price determination needed //TODO - fix broken, hanging logic
 		    var ideal = determinePurchaseQuantity(bazaar, good);
 
 		    //can't buy more than limit
@@ -32,12 +34,12 @@ namespace BazaarBot.Agents
 		    return null;
 	    }
 
-	    override public Offer? createAsk(Market bazaar, String commodity_, double limit_)
+	    override public Offer? CreateAsk(Market bazaar, String commodity_, double limit_)
 	    {
-		    var ask_price = _inventory.query_cost(commodity_) * 1.02; //asks are fair prices:  costs + small profit
+		    var ask_price = _inventory.QueryCost(commodity_) * ProfitMarginFactor; //asks are fair prices:  costs + small profit
 
-            var quantity_to_sell = _inventory.query(commodity_);//put asks out for all inventory
-            nProduct = quantity_to_sell;
+            var quantity_to_sell = _inventory.QueryQuantity(commodity_);//put asks out for all inventory
+            nProduct = quantity_to_sell; //TODO - overwrite? maybe subtract?
 
 		    if (quantity_to_sell > 0)
 		    {
@@ -46,23 +48,22 @@ namespace BazaarBot.Agents
 		    return null;
 	    }
 
-	    override public void generateOffers(Market bazaar, String commodity)
+	    override public void GenerateOffers(Market bazaar, string commodity)
 	    {
 		    Offer? offer;
-		    double surplus = _inventory.surplus(commodity);
-		    if (surplus >= 1)
+		    if (_inventory.Surplus(commodity) >= 1) //surplus
 		    {
-			     offer = createAsk(bazaar, commodity, 1);
+			     offer = CreateAsk(bazaar, commodity, 1);
 			     if (offer != null)
 			     {
-				    bazaar.ask(offer.Value);
+				    bazaar.Ask(offer.Value);
 			     }
 		    }
 		    else
 		    {
-			    var shortage = _inventory.shortage(commodity);
-			    var space = _inventory.getEmptySpace();
-			    var unit_size = _inventory.getCapacityFor(commodity);
+			    var shortage = _inventory.Shortage(commodity);
+			    var space = _inventory.GetEmptySpace();
+			    var unit_size = _inventory.GetCapacityFor(commodity);
 
 			    if (shortage > 0 && space >= unit_size)
 			    {
@@ -81,25 +82,23 @@ namespace BazaarBot.Agents
 					    offer = CreateBid(bazaar, commodity, limit);
 					    if (offer != null)
 					    {
-						    bazaar.bid(offer.Value);
+						    bazaar.Bid(offer.Value);
 					    }
 				    }
 			    }
 		    }
 	    }
 
-	    override public void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice= 0)
+	    override public void UpdatePriceModel(Market bazaar, string act, string good, bool success, double unitPrice= 0)
 	    {
-		    List<double> observed_trades;
-
 		    if (success)
 		    {
-			    //Add this to my list of observed trades
-			    observed_trades = _observedTradingRange[good];
+				//Add this to my list of observed trades
+				List<double> observed_trades = _observedTradingRange[good];
 			    observed_trades.Add(unitPrice);
 		    }
 
-		    var public_mean_price = bazaar.getAverageHistoricalPrice(good, 1);
+		    var public_mean_price = bazaar.GetAverageHistoricalPrice(good, 1); //TODO - do something with this value
 
 	    }
     }

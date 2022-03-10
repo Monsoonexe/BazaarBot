@@ -83,7 +83,7 @@ namespace BazaarBot
 
 				    foreach (var commodity in _goodTypes)
 				    {
-					    agent.generateOffers(this, commodity);
+					    agent.GenerateOffers(this, commodity);
 				    }
 			    }
 
@@ -105,12 +105,12 @@ namespace BazaarBot
 		    }
 	    }
 
-	    public void ask(Offer offer)
+	    public void Ask(Offer offer)
 	    {
 		    _book.ask(offer);
 	    }
 
-	    public void bid(Offer offer)
+	    public void Bid(Offer offer)
 	    {
 		    _book.bid(offer);
 	    }
@@ -122,7 +122,7 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double getAverageHistoricalPrice(String good, int range)
+	    public double GetAverageHistoricalPrice(String good, int range)
 	    {
 		    return history.Prices.Average(good, range);
 	    }
