@@ -34,6 +34,9 @@ namespace EconomySim
 		public bool Equals(Good other)
 			=> Size == other.Size && ID == other.ID;
 
+		public override bool Equals(object obj)
+			=> obj is Good other && Equals(other);
+
 		public override int GetHashCode() => hashCode;
 	}
 }
