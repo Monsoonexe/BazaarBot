@@ -20,7 +20,7 @@ namespace EconomySim
 	    }
 
 
-	    override public Offer createBid(Market bazaar, String good, double limit)
+		public override Offer? CreateBid(Market bazaar, String good, double limit)
 	    {
             var bidPrice = 0;// determinePriceOf(good);  bids are now made "at market", no price determination needed
 		    var ideal = determinePurchaseQuantity(bazaar, good);
@@ -34,7 +34,7 @@ namespace EconomySim
 		    return null;
 	    }
 
-	    override public Offer createAsk(Market bazaar, String commodity_, double limit_)
+	    override public Offer? createAsk(Market bazaar, String commodity_, double limit_)
 	    {
 		    var ask_price = _inventory.query_cost(commodity_) * 1.02; //asks are fair prices:  costs + small profit
 
@@ -50,14 +50,14 @@ namespace EconomySim
 
 	    override public void generateOffers(Market bazaar, String commodity)
 	    {
-		    Offer offer;
+		    Offer? offer;
 		    double surplus = _inventory.surplus(commodity);
 		    if (surplus >= 1)
 		    {
 			     offer = createAsk(bazaar, commodity, 1);
 			     if (offer != null)
 			     {
-				    bazaar.ask(offer);
+				    bazaar.ask(offer.Value);
 			     }
 		    }
 		    else
@@ -80,17 +80,17 @@ namespace EconomySim
 
 				    if (limit > 0)
 				    {
-					    offer = createBid(bazaar, commodity, limit);
+					    offer = CreateBid(bazaar, commodity, limit);
 					    if (offer != null)
 					    {
-						    bazaar.bid(offer);
+						    bazaar.bid(offer.Value);
 					    }
 				    }
 			    }
 		    }
 	    }
 
-	    override public void updatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice= 0)
+	    override public void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice= 0)
 	    {
 		    List<double> observed_trades;
 

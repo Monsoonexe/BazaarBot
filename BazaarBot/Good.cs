@@ -29,10 +29,9 @@ namespace EconomySim
 			hashCode = ID.GetHashCode();
 	    }
 
-	    public object Clone()
-	    {
-		    return new Good(ID, Size);
-	    }
+	    public object Clone() => new Good(ID, Size);
+
+		public Good Copy() => Clone() as Good;
 
 		public bool Equals(Good other)
 			=> Size == other.Size && ID == other.ID;

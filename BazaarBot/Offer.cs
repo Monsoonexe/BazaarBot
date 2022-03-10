@@ -1,42 +1,25 @@
-﻿
+﻿using System;
+
 namespace EconomySim
 {
     public struct Offer
     {
-		/// <summary>
-		/// The thing that is up for sale.
-		/// </summary>
-	    public readonly string Good;
+	    public string good;
+	    public double units;			//how many units
+	    public double unit_price;	//price per unit
+	    public int agent_id;		//who offered this
 
-		/// <summary>
-		/// Quantity of <see cref="Good"/>.
-		/// </summary>
-	    public readonly double Units;
-
-		/// <summary>
-		/// The purchase cost in currency per <see cref="Unit"/>.
-		/// </summary>
-		public readonly double UnitPrice;
-
-		/// <summary>
-		/// The offerer.
-		/// </summary>
-		public readonly int AgentID;
-
-		/// <summary>
-		/// <see cref="Units"/> * <see cref="UnitPrice"/>.
-		/// </summary>
-		public double TotalStackPrice => Units * UnitPrice;
-
-	    public Offer(int agentID, string good, double units, double UnitPrice)
+	    public Offer(int agent_id_=-1,String commodity_="",double units_=1.0,double unit_price_=1.0)
 	    {
-		    AgentID = agentID;
-		    Good = good;
-		    Units = units;
-		    this.UnitPrice = UnitPrice;
+		    agent_id = agent_id_;
+		    good = commodity_;
+		    units = units_;
+		    unit_price = unit_price_;
 	    }
 
-	    public override string ToString()
-		    => $"({AgentID}): {Good} x {Units} @ {UnitPrice})";
+	    public String toString()
+	    {
+		    return "("+agent_id + "): " + good + "x " + units + " @ " + unit_price;
+	    }
     }
 }

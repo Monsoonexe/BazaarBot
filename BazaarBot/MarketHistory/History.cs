@@ -1,28 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace EconomySim
+namespace EconomySim.MarketHistory
 {
-    enum EconNoun
-    {
-	    Price,
-	    Ask,
-	    Bid,
-	    Trade,
-	    Profit
-    }
-
     class HistoryLog
     {
-	    EconNoun type;
-	    Dictionary<String,List<double>>log;
+	    public readonly EconNoun type;
+	    private readonly Dictionary<string, List<double>> log;
 
 	    public HistoryLog(EconNoun type)
 	    {
 		    this.type = type;
-		    log = new Dictionary<String, List<double>>();
+		    log = new Dictionary<string, List<double>>();
 	    }
 
 	    /**
@@ -30,7 +19,7 @@ namespace EconomySim
 	     * @param	name
 	     * @param	amount
 	     */
-	    public void add(String name, double amount)
+	    public void add(string name, double amount)
 	    {
 		    if (log.ContainsKey(name))
 		    {
@@ -57,7 +46,7 @@ namespace EconomySim
 	     * @param	range how far to look back
 	     * @return
 	     */
-	    public double average(String name, int range)
+	    public double Average(String name, int range)
 	    {
 		    if (log.ContainsKey(name))
 		    {

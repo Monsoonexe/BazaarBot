@@ -31,19 +31,19 @@ namespace EconomySim
 
 	    public bool bid(Offer offer)
 	    {
-		    if (!bids.ContainsKey(offer.Good))
+		    if (!bids.ContainsKey(offer.good))
 			    return false;
 
-		    bids[offer.Good].Add(offer);
+		    bids[offer.good].Add(offer);
 		    return true;
 	    }
 
 	    public bool ask(Offer offer)
 	    {
-		    if (!bids.ContainsKey(offer.Good))
+		    if (!bids.ContainsKey(offer.good))
 			    return false;
 
-		    asks[offer.Good].Add(offer);
+		    asks[offer.good].Add(offer);
 		    return true;
 	    }
     }

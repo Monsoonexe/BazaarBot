@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using EconomySim.MarketHistory;
 
 namespace EconomySim
 {
@@ -123,7 +123,7 @@ namespace EconomySim
 
 	    public double getAverageHistoricalPrice(String good, int range)
 	    {
-		    return history.prices.average(good, range);
+		    return history.prices.Average(good, range);
 	    }
 
 	    /**
@@ -139,8 +139,8 @@ namespace EconomySim
             double best_ratio = -99999;// Math.NEGATIVE_INFINITY;
 		    foreach (var good in _goodTypes)
 		    {
-			    var asks = history.asks.average(good, range);
-			    var bids = history.bids.average(good, range);
+			    var asks = history.asks.Average(good, range);
+			    var bids = history.bids.Average(good, range);
 
 			    double ratio = 0;
 			    if (asks == 0 && bids > 0)
@@ -177,7 +177,7 @@ namespace EconomySim
 		    {
 			    if (exclude == null || !exclude.Contains(g))
 			    {
-				    double price = history.prices.average(g, range);
+				    double price = history.prices.Average(g, range);
 				    if (price < best_price)
 				    {
 					    best_price = price;
@@ -203,7 +203,7 @@ namespace EconomySim
 		    {
 			    if (exclude == null || !exclude.Contains(g))
 			    {
-				    var price = history.prices.average(g, range);
+				    var price = history.prices.Average(g, range);
 				    if (price > best_price)
 				    {
 					    best_price = price;
@@ -225,7 +225,7 @@ namespace EconomySim
 		    String bestClass="";
 		    foreach (var className in _mapAgents.Keys)
 		    {
-			    double val = history.profit.average(className, range);
+			    double val = history.profit.Average(className, range);
 			    if (val > best)
 			    {
 				    bestClass = className;
@@ -260,11 +260,11 @@ namespace EconomySim
 		    return _goodTypes;
 	    }
 
-	    public Good getGoodEntry(String str)
+	    public Good getGoodEntry(string str)
 	    {
 		    if (_mapGoods.ContainsKey(str))
 		    {
-			    return _mapGoods[str].copy();
+			    return (Good)_mapGoods[str].Clone();
 		    }
 		    return null;
 	    }
@@ -290,16 +290,16 @@ namespace EconomySim
 		    {
 			    mr.strListGood += commodity + "\n";
 
-			    var price = history.prices.average(commodity, rounds);
+			    var price = history.prices.Average(commodity, rounds);
 			    mr.strListGoodPrices += Quick.numStr(price, 2) + "\n";
 
-			    var asks = history.asks.average(commodity, rounds);
+			    var asks = history.asks.Average(commodity, rounds);
 			    mr.strListGoodAsks += (int)(asks) + "\n";
 
-			    var bids = history.bids.average(commodity, rounds);
+			    var bids = history.bids.Average(commodity, rounds);
 			    mr.strListGoodBids += (int)(bids) + "\n";
 
-			    var trades = history.trades.average(commodity, rounds);
+			    var trades = history.trades.Average(commodity, rounds);
 			    mr.strListGoodTrades += (int)(trades) + "\n";
 
 			    mr.arrStrListInventory.Add(commodity + "\n\n");
@@ -312,7 +312,7 @@ namespace EconomySim
 				    inventory.Add(0);
 			    }
 			    mr.strListAgent += key + "\n";
-			    var profit = history.profit.average(key, rounds);
+			    var profit = history.profit.Average(key, rounds);
 			    mr.strListAgentProfit += Quick.numStr(profit, 2) + "\n";
 
 			    double test_profit = 0;
@@ -373,8 +373,8 @@ namespace EconomySim
 
 		    foreach (var aData in data.agentTypes)
 		    {
-			    _mapAgents[aData.className] = aData;
-			    history.profit.register(aData.className);
+			    _mapAgents[aData.ClassName] = aData;
+			    history.profit.register(aData.ClassName);
 		    }
 
 		    //Make the agent list
@@ -413,12 +413,12 @@ namespace EconomySim
 
 		    for (int i=0; i<bids.Count; i++)
 		    {
-			    numBids += bids[i].Units;
+			    numBids += bids[i].units;
 		    }
 
 		    for (int i=0; i<asks.Count; i++)
 		    {
-			    numAsks += asks[i].Units;
+			    numAsks += asks[i].units;
 		    }
 
 		    //march through and try to clear orders
@@ -427,8 +427,8 @@ namespace EconomySim
 			    var buyer = bids[0];
 			    var seller = asks[0];
 
-			    var quantity_traded = (double)Math.Min(seller.Units, buyer.Units);
-                var clearing_price = seller.UnitPrice; //Quick.avgf(seller.unit_price, buyer.unit_price);
+			    var quantity_traded = (double)Math.Min(seller.units, buyer.units);
+                var clearing_price = seller.unit_price; //Quick.avgf(seller.unit_price, buyer.unit_price);
 
                 //if (buyer.unit_price < seller.unit_price)
                 //    break;
@@ -436,17 +436,17 @@ namespace EconomySim
 			    if (quantity_traded > 0)
 			    {
 				    //transfer the goods for the agreed price
-				    seller.Units -= quantity_traded;
-				    buyer.Units -= quantity_traded;
+				    seller.units -= quantity_traded;
+				    buyer.units -= quantity_traded;
 
-				    transferGood(good, quantity_traded, seller.AgentID, buyer.AgentID, clearing_price);
-				    transferMoney(quantity_traded * clearing_price, seller.AgentID, buyer.AgentID);
+				    transferGood(good, quantity_traded, seller.agent_id, buyer.agent_id, clearing_price);
+				    transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
 
 				    //update agent price beliefs based on successful transaction
-				    var buyer_a = _agents[buyer.AgentID];
-				    var seller_a = _agents[seller.AgentID];
-				    buyer_a.updatePriceModel(this, "buy", good, true, clearing_price);
-				    seller_a.updatePriceModel(this, "sell", good, true, clearing_price);
+				    var buyer_a = _agents[buyer.agent_id];
+				    var seller_a = _agents[seller.agent_id];
+				    buyer_a.UpdatePriceModel(this, "buy", good, true, clearing_price);
+				    seller_a.UpdatePriceModel(this, "sell", good, true, clearing_price);
 
 				    //log the stats
 				    moneyTraded += (quantity_traded * clearing_price);
@@ -454,12 +454,12 @@ namespace EconomySim
 				    successfulTrades++;
 			    }
 
-			    if (seller.Units == 0)		//seller is out of offered good
+			    if (seller.units == 0)		//seller is out of offered good
 			    {
 				    asks.RemoveAt(0); //.splice(0, 1);		//remove ask
 				    failsafe = 0;
 			    }
-			    if (buyer.Units == 0)		//buyer is out of offered good
+			    if (buyer.units == 0)		//buyer is out of offered good
 			    {
 				    bids.RemoveAt(0);//.splice(0, 1);		//remove bid
 				    failsafe = 0;
@@ -478,15 +478,15 @@ namespace EconomySim
 		    while (bids.Count > 0)
 		    {
 			    var buyer = bids[0];
-			    var buyer_a = _agents[buyer.AgentID];
-			    buyer_a.updatePriceModel(this,"buy",good, false);
+			    var buyer_a = _agents[buyer.agent_id];
+			    buyer_a.UpdatePriceModel(this,"buy",good, false);
 			    bids.RemoveAt(0);//.splice(0, 1);
 		    }
             while (asks.Count > 0)
 		    {
 			    var seller = asks[0];
-			    var seller_a = _agents[seller.AgentID];
-			    seller_a.updatePriceModel(this,"sell",good, false);
+			    var seller_a = _agents[seller.agent_id];
+			    seller_a.UpdatePriceModel(this,"sell",good, false);
                 asks.RemoveAt(0);// splice(0, 1);
 		    }
 
@@ -504,8 +504,8 @@ namespace EconomySim
 		    else
 		    {
 			    //special case: none were traded this round, use last round's average price
-			    history.prices.add(good, history.prices.average(good, 1));
-			    avgPrice = history.prices.average(good,1);
+			    history.prices.add(good, history.prices.Average(good, 1));
+			    avgPrice = history.prices.Average(good,1);
 		    }
 
             List<BasicAgent> ag = _agents.ToList<BasicAgent>();

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace EconomySim
 {
@@ -11,8 +9,9 @@ namespace EconomySim
  * @author larsiusprime
  */
 
-    class AgentData {
-	    public string className { get; set;}
+    class AgentData 
+	{
+	    public string ClassName { get; set;}
 	    public double money;
 	    public InventoryData inventory;
 	    public string logicName;
@@ -21,7 +20,7 @@ namespace EconomySim
 
         public AgentData(string className, double money, string logicName)
         {
-            this.className = className;
+            this.ClassName = className;
             this.money = money;
             this.logicName = logicName;
         }
@@ -71,7 +70,7 @@ namespace EconomySim
 	    public BasicAgent(int id, AgentData data)
 	    {
 		    this.id = id;
-		    className = data.className;
+		    className = data.ClassName;
 		    money = data.money;
 		    _inventory = new Inventory();
 		    _inventory.fromData(data.inventory);
@@ -131,18 +130,18 @@ namespace EconomySim
 		    //no implemenation -- provide your own in a subclass
 	    }
 
-        public virtual void updatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice = 0)
+        public virtual void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice = 0)
 	    {
 		    //no implementation -- provide your own in a subclass
 	    }
 
-	    public virtual Offer createBid(Market bazaar, String good, double limit)
+	    public virtual Offer? CreateBid(Market bazaar, String good, double limit)
 	    {
 		    //no implementation -- provide your own in a subclass
 		    return null;
 	    }
 
-        public virtual Offer createAsk(Market bazaar, String commodity_, double limit_)
+        public virtual Offer? createAsk(Market bazaar, String commodity_, double limit_)
 	    {
 		    //no implementation -- provide your own in a subclass
 		    return null;
