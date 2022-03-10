@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BazaarBot.Agents;
 
 namespace BazaarBot
 {
@@ -116,7 +117,7 @@ namespace BazaarBot
     //        return Std.int(Math.random() * cast(1 + max - min, Float)) + min;
     //    }
 
-        public static double randomRange(double a, double b)
+        public static double RandomRange(double a, double b)
         {
             double r = rnd.NextDouble();
             double min = a < b ? a : b;
@@ -124,28 +125,7 @@ namespace BazaarBot
             double range = max - min;
             return r * range + min;
         }
-
-        public static List<Offer> shuffle(List<Offer>list)
-        {
-            /*
-            To shuffle an array a of n elements (indices 0..n-1):
-            for i from n − 1 downto 1 do
-                j ← random integer with 0 ≤ j ≤ i
-                exchange a[j] and a[i]
-             */
-            for (int i=0; i<list.Count - 1; i++)
-            {
-                int ii = (list.Count - 1) - i;
-                if (ii > 1)
-                {
-                    int j = rnd.Next(ii);
-                    var temp = list[j];
-                    list[j] = list[ii];
-                    list[ii] = temp;
-                }
-            }
-            return list;
-        }
+        public static int RandomRange(int a, int b) => (int)RandomRange((double)a, (double)b);
 
         public static int sortAgentAlpha(BasicAgent a, BasicAgent b)
         {

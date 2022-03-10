@@ -175,7 +175,7 @@ namespace BazaarBot.Agents
 		    var trading_range = observeTradingRange(commodity_,10);//point
 		    if (trading_range != null && mean>0)
 		    {
-			    var favorability= Quick.positionInRange(mean, trading_range.x, trading_range.y);//double
+			    var favorability= Quick.positionInRange(mean, trading_range.Value.x, trading_range.Value.y);//double
 			    //position_in_range: high means price is at a high point
 
 			    double amount_to_sell = Math.Round(favorability * _inventory.surplus(commodity_)); //double
@@ -195,7 +195,7 @@ amount_to_sell = _inventory.query(commodity_);
 		    var trading_range = observeTradingRange(commodity_,10); //Point
 		    if (trading_range != null)
 		    {
-			    var favorability = Quick.positionInRange(mean, trading_range.x, trading_range.y);//double
+			    var favorability = Quick.positionInRange(mean, trading_range.Value.x, trading_range.Value.y);//double
 			    favorability = 1 - favorability;
 			    //do 1 - favorability to see how close we are to the low end
 
@@ -209,7 +209,7 @@ amount_to_sell = _inventory.query(commodity_);
 		    return 0;
 	    }
 
-	    private Point observeTradingRange(String good, int window)
+	    private Point? observeTradingRange(String good, int window)
 	    {
 		    var a = _observedTradingRange[good]; //List<double>
 		    var pt = new Point(Quick.minArr(a,window), Quick.maxArr(a,window));

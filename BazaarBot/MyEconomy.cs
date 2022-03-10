@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
+using BazaarBot.Agents;
 
 namespace BazaarBot
 {

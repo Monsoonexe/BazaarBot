@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using BazaarBot.MarketHistory;
+using BazaarBot.Agents;
 
 namespace BazaarBot
 {
@@ -396,11 +397,11 @@ namespace BazaarBot
 		    var bids = _book.bids[good];
 		    var asks = _book.asks[good];
 
-		    bids = Quick.shuffle(bids);  
-		    asks = Quick.shuffle(asks);  
+			bids.Shuffle();
+			asks.Shuffle();
 
-            //bids.Sort(Quick.sortOfferDecending); //highest buying price first
-            asks.Sort(Quick.sortOfferAcending); //lowest selling price first
+			//bids.Sort(Quick.sortOfferDecending); //highest buying price first
+			asks.Sort(Quick.sortOfferAcending); //lowest selling price first
 
 		    int successfulTrades = 0;		//# of successful trades this round
 		    double moneyTraded = 0;			//amount of money traded this round
@@ -511,8 +512,8 @@ namespace BazaarBot
             List<BasicAgent> ag = _agents.ToList<BasicAgent>();
 		    ag.Sort(Quick.sortAgentAlpha);
 
-		    String curr_class = "";
-		    String last_class = "";
+		    string curr_class = "";
+		    string last_class = "";
 		    List<double> list  = null;
 		    double avg_profit = 0;
 

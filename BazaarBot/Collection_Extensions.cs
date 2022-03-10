@@ -2,11 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEngine;
-
-//clarifications
-using Random = UnityEngine.Random;
-using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// 
@@ -38,21 +33,6 @@ public static class Collection_Extensions
         if (!list.Contains(item))
             list.Add(item);
     }
-
-    [Conditional("UNITY_EDITOR")]//editor only
-    public static void AssertValidIndex<T>(
-        this IList<T> collection, int index)
-        => Debug.AssertFormat(index >= 0 && index < collection.Count,
-            "Index out of bounds [{0} | {1}].",//report index
-            index, collection.Count);
-
-    [Conditional("UNITY_EDITOR")]//editor only
-    public static void AssertValidIndex<T>(
-        this IList<T> collection, int index, string name)
-        => Debug.AssertFormat(index >= 0 && index < collection.Count,
-            "Index out of bounds [{0} | {1}] " + //report index
-            "on: {2}", //report name of problem mono
-            index, collection.Count, name);
 
     /// <summary>
     /// Returns 'true' if the dictionary contains the given key, which indicates the value was removed.
@@ -239,34 +219,9 @@ public static class Collection_Extensions
     {
         var length = collection.Count;
         if (length == 0) return default; // no elements!
-        return collection[Random.Range(0, length)];
+        return collection[BazaarBot.Quick.RandomRange(0, length)];
     }
 
-    /// <summary>
-    /// Get a random element from Collection that is not in usedCollection. 
-    /// Up to caller to store this value in usedCollection
-    /// </summary>
-    public static T GetRandomUnused<T>(this IList<T> totalCollection, 
-        IList<T> usedCollection)
-    {
-        //build a pool of indices that have not been used.  
-        var possibleIndices = CommunalLists.Get<int>();
-
-        int totalCount = totalCollection.Count;
-        for (int i = 0; i < totalCount; ++i)
-            if (!usedCollection.Contains(totalCollection[i]))
-                possibleIndices.Add(i);//this index is safe to choose from
-
-        if (possibleIndices.Count == 0)
-        {
-            Debug.Log("Every index has been used in collection of count: "
-                + totalCollection.Count);
-            return default;
-        }
-
-        return totalCollection[possibleIndices[
-            Random.Range(0, possibleIndices.Count)]];
-    }
 
     /// <summary>
     /// Remove and return the element at the given index.
@@ -277,7 +232,6 @@ public static class Collection_Extensions
     /// <returns></returns>
     public static T GetRemoveAt<T>(this List<T> list, int i)
     {
-        list.AssertValidIndex(i);
         T el = list[i];
         list.RemoveAt(i);
         return el;
@@ -301,7 +255,7 @@ public static class Collection_Extensions
     /// </summary>
     public static T GetRemoveRandomElement<T>(this List<T> list)
     {
-        var randomIndex = Random.Range(0, list.Count);
+        var randomIndex = (int)BazaarBot.Quick.RandomRange(0, list.Count);
         T randomElement = list[randomIndex];
         list.RemoveAt(randomIndex);
         return randomElement;
@@ -319,7 +273,7 @@ public static class Collection_Extensions
         end = (end < 1 || end > count) ? count : end;//end [1, count]
 
         //compute
-        var randomIndex = Random.Range(start, end);
+        var randomIndex = (int)BazaarBot.Quick.RandomRange(start, end);
         T randomElement = list[randomIndex];
         list.RemoveAt(randomIndex);
         return randomElement;
@@ -593,10 +547,7 @@ public static class Collection_Extensions
     /// Swap element at index a with element at index b.
     /// </summary>
     public static void Swap<T>(this IList<T> list, int a, int b)
-    {   //validate
-        list.AssertValidIndex(a);
-        list.AssertValidIndex(b);
-
+    {
         //perform swap
         T tmp = list[a];
         list[a] = list[b];
@@ -615,7 +566,7 @@ public static class Collection_Extensions
         var count = list.Count; //cache for less function overhead on every iteration
         for (var i = 0; i < count; ++i)
         {
-            var randomIndex = Random.Range(0, count);
+            var randomIndex = BazaarBot.Quick.RandomRange(0, count);
             list.Swap(i, randomIndex);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// Holds commonly used string values to help avoid excess garbage generation.
@@ -7,37 +6,6 @@ using UnityEngine;
 /// <seealso cref="Utility"/>
 public static class ConstStrings
 {
-    public const string UNITY_EDITOR = "UNITY_EDITOR"; //used in [Conditional]
-    
-    //common tags
-    public static readonly string TAG_PLAYER = "Player";
-    public static readonly string TAG_MAIN_CAMERA = "MainCamera";
-
-    //common inputs
-    public static readonly string INPUT_AXIS_HOR = "Horizontal";
-    public static readonly string INPUT_AXIS_VERT = "Vertical";
-    public static readonly string INPUT_JUMP = "Jump";
-    public static readonly string INPUT_PAUSE_MENU = "Cancel";
-    public static readonly string INPUT_INTERACT = "Interact";
-    public static readonly string INPUT_MOUSE_X = "Mouse X";
-    public static readonly string INPUT_MOUSE_Y = "Mouse Y";
-    public static readonly string INPUT_USE_TOOL = "Fire1";
-    public static readonly string INPUT_BUILD_ITEM = "Fire1";//same as use tool
-
-    /// <summary>
-    /// Like Enter or Return.
-    /// </summary>
-    public static readonly string INPUT_SUBMIT = "Submit";
-
-    //common prompts
-    public static readonly string INFO = "Info";
-    public static readonly string NO = "No";
-    public static readonly string OKAY = "Okay";
-    public static readonly string YES = "Yes";
-    public static readonly string CONTINUE = "Continue";
-    public static readonly string FALSE_STRING_LOWER = bool.FalseString.ToLower();
-    public static readonly string TRUE_STRING_LOWER = bool.TrueString.ToLower();
-
     //common spacers
     public static readonly string SPACE_SLASH_SPACE = " / ";
     public static readonly string SPACE = " ";
