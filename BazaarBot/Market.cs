@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using EconomySim.MarketHistory;
+using BazaarBot.MarketHistory;
 
-namespace EconomySim
+namespace BazaarBot
 {
     interface ISignalBankrupt
     {
@@ -13,7 +13,7 @@ namespace EconomySim
 
     class Market
     {
-	    public String name;
+	    public string name;
 
 	    /**Logs information about all economic activity in this market**/
 	    public History history;
@@ -26,11 +26,11 @@ namespace EconomySim
 
 	    private int _roundNum = 0;
 
-	    private List<String> _goodTypes;		//list of string ids for all the legal commodities
+	    private List<string> _goodTypes;		//list of string ids for all the legal commodities
 	    public BindingList<BasicAgent> _agents;
 	    public TradeBook _book;
-	    private Dictionary<String, AgentData> _mapAgents;
-	    private Dictionary<String, Good> _mapGoods;
+	    private Dictionary<string, AgentData> _mapAgents;
+	    private Dictionary<string, Good> _mapGoods;
         
         
         public Market(string name, ISignalBankrupt isb)
@@ -39,10 +39,10 @@ namespace EconomySim
 
 		    history = new History();
 		    _book = new TradeBook();
-		    _goodTypes = new List<String>();
+		    _goodTypes = new List<string>();
 		    _agents = new BindingList<BasicAgent>();
-		    _mapGoods = new Dictionary<String, Good>();
-		    _mapAgents = new Dictionary<String, AgentData>();
+		    _mapGoods = new Dictionary<string, Good>();
+		    _mapAgents = new Dictionary<string, AgentData>();
 
 		    signalBankrupt = isb;//new TypedSignal<Market->BasicAgent->Void>();
 	    }

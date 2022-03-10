@@ -1,5 +1,5 @@
 ﻿
-namespace EconomySim.MarketHistory
+namespace BazaarBot.MarketHistory
 {
     class History
     {

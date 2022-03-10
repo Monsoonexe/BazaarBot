@@ -84,8 +84,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BazaarBot\Agent.cs" />
-    <Compile Include="BazaarBot\BasicAgent.cs" />
+    <Compile Include="BazaarBot\Agents\Agent.cs" />
+    <Compile Include="BazaarBot\Agents\AgentData.cs" />
+    <Compile Include="BazaarBot\Agents\BasicAgent.cs" />
     <Compile Include="BazaarBot\Collection_Extensions.cs" />
     <Compile Include="BazaarBot\ConstStrings.cs" />
     <Compile Include="BazaarBot\Economy.cs" />
@@ -94,13 +95,14 @@
     <Compile Include="BazaarBot\MarketHistory\History.cs" />
     <Compile Include="BazaarBot\Inventory.cs" />
     <Compile Include="BazaarBot\InventoryData.cs" />
-    <Compile Include="BazaarBot\Logic.cs" />
+    <Compile Include="BazaarBot\Agents\Logic.cs" />
     <Compile Include="BazaarBot\Market.cs" />
     <Compile Include="BazaarBot\MarketData.cs" />
     <Compile Include="BazaarBot\MarketHistory\HistoryLog.cs" />
     <Compile Include="BazaarBot\MarketReport.cs" />
     <Compile Include="BazaarBot\MyEconomy.cs" />
     <Compile Include="BazaarBot\Offer.cs" />
+    <Compile Include="BazaarBot\Point.cs" />
     <Compile Include="BazaarBot\Quick.cs" />
     <Compile Include="BazaarBot\TradeBook.cs" />
     <Compile Include="MainWindow.xaml.cs">

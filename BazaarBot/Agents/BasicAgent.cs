@@ -1,44 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EconomySim
+namespace BazaarBot.Agents
 {
-/**
- * The most fundamental agent class, and has as little implementation as possible.
- * In most cases you should start by extending Agent instead of this.
- * @author larsiusprime
- */
-
-    class AgentData 
-	{
-	    public string ClassName { get; set;}
-	    public double money;
-	    public InventoryData inventory;
-	    public string logicName;
-	    public  Logic logic;
-	    public int? lookBack;
-
-        public AgentData(string className, double money, string logicName)
-        {
-            this.ClassName = className;
-            this.money = money;
-            this.logicName = logicName;
-        }
-
-    }
-
-    class Point
-    {
-        public double x;
-        public double y;
-        public Point(double x,double y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-
     class BasicAgent
     {
 	    public int id;				//unique integer identifier
@@ -71,7 +35,7 @@ namespace EconomySim
 	    {
 		    this.id = id;
 		    className = data.ClassName;
-		    money = data.money;
+		    money = data.Money;
 		    _inventory = new Inventory();
 		    _inventory.fromData(data.inventory);
 		    _logic = data.logic;
@@ -225,7 +189,7 @@ amount_to_sell = _inventory.query(commodity_);
 		    return 0;
 	    }
 
-        protected double determinePurchaseQuantity(Market bazaar, String commodity_)
+        protected double determinePurchaseQuantity(Market bazaar, string commodity_)
 	    {
 		    var mean = bazaar.getAverageHistoricalPrice(commodity_,_lookback);//double
 		    var trading_range = observeTradingRange(commodity_,10); //Point

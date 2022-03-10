@@ -6,7 +6,7 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 
-namespace EconomySim
+namespace BazaarBot
 {
     class DoranAndParberryEconomy : Economy
     {
@@ -208,7 +208,7 @@ namespace EconomySim
 
         private BasicAgent getAgent(AgentData data)
         {
-            data.logic = getLogic(data.logicName);
+            data.logic = getLogic(data.LogicName);
             return new Agent(0, data);
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EconomySim
+namespace BazaarBot
 {
 	/// <summary>
 	/// Base class that represents something that can be bought and sold.

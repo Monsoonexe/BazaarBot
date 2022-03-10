@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace EconomySim.MarketHistory
+namespace BazaarBot.MarketHistory
 {
 	class HistoryLog
 	{

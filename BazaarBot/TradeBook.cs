@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace EconomySim
+namespace BazaarBot
 {
     class TradeBook
     {

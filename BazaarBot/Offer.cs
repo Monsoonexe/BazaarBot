@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EconomySim
+namespace BazaarBot
 {
     public struct Offer
     {
