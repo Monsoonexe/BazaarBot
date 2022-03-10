@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace EconomySim.MarketHistory
 {
 	class HistoryLog
 	{
-		public readonly EconNoun type;
+		public readonly EconNoun Type;
 		private readonly Dictionary<string, List<double>> log;
 
 		public HistoryLog(EconNoun type)
 		{
-			this.type = type;
+			Type = type;
 			log = new Dictionary<string, List<double>>();
 		}
 
@@ -21,11 +20,8 @@ namespace EconomySim.MarketHistory
 	     */
 		public void Add(string name, double amount)
 		{
-			if (log.ContainsKey(name))
-			{
-				var list = log[name];
+			if (log.TryGetValue(name, out List<double> list))
 				list.Add(amount);
-			}
 		}
 
 		/**
@@ -48,9 +44,8 @@ namespace EconomySim.MarketHistory
 	     */
 		public double Average(string name, int range)
 		{
-			if (log.ContainsKey(name))
+			if (log.TryGetValue(name, out List<double> list))
 			{
-				var list = log[name];
 				double amt = 0.0;
 				var length = list.Count;
 				if (length < range)
@@ -61,8 +56,7 @@ namespace EconomySim.MarketHistory
 				{
 					amt += list[length - 1 - i];
 				}
-				if (range <= 0) return -1;
-				return amt / range;
+				return (range <= 0) ? -1 : amt / range;
 			}
 			return 0;
 		}

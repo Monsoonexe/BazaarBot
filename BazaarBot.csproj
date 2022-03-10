@@ -86,6 +86,8 @@
     </Compile>
     <Compile Include="BazaarBot\Agent.cs" />
     <Compile Include="BazaarBot\BasicAgent.cs" />
+    <Compile Include="BazaarBot\Collection_Extensions.cs" />
+    <Compile Include="BazaarBot\ConstStrings.cs" />
     <Compile Include="BazaarBot\Economy.cs" />
     <Compile Include="BazaarBot\Good.cs" />
     <Compile Include="BazaarBot\MarketHistory\EconNoun.cs" />
@@ -95,6 +97,7 @@
     <Compile Include="BazaarBot\Logic.cs" />
     <Compile Include="BazaarBot\Market.cs" />
     <Compile Include="BazaarBot\MarketData.cs" />
+    <Compile Include="BazaarBot\MarketHistory\HistoryLog.cs" />
     <Compile Include="BazaarBot\MarketReport.cs" />
     <Compile Include="BazaarBot\MyEconomy.cs" />
     <Compile Include="BazaarBot\Offer.cs" />
