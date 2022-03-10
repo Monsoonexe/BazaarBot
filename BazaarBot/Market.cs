@@ -413,12 +413,12 @@ namespace EconomySim
 
 		    for (int i=0; i<bids.Count; i++)
 		    {
-			    numBids += bids[i].units;
+			    numBids += bids[i].Units;
 		    }
 
 		    for (int i=0; i<asks.Count; i++)
 		    {
-			    numAsks += asks[i].units;
+			    numAsks += asks[i].Units;
 		    }
 
 		    //march through and try to clear orders
@@ -427,8 +427,8 @@ namespace EconomySim
 			    var buyer = bids[0];
 			    var seller = asks[0];
 
-			    var quantity_traded = (double)Math.Min(seller.units, buyer.units);
-                var clearing_price = seller.unit_price; //Quick.avgf(seller.unit_price, buyer.unit_price);
+			    var quantity_traded = (double)Math.Min(seller.Units, buyer.Units);
+                var clearing_price = seller.UnitPrice; //Quick.avgf(seller.unit_price, buyer.unit_price);
 
                 //if (buyer.unit_price < seller.unit_price)
                 //    break;
@@ -436,15 +436,15 @@ namespace EconomySim
 			    if (quantity_traded > 0)
 			    {
 				    //transfer the goods for the agreed price
-				    seller.units -= quantity_traded;
-				    buyer.units -= quantity_traded;
+				    seller.Units -= quantity_traded;
+				    buyer.Units -= quantity_traded;
 
-				    transferGood(good, quantity_traded, seller.agent_id, buyer.agent_id, clearing_price);
-				    transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
+				    transferGood(good, quantity_traded, seller.AgentID, buyer.AgentID, clearing_price);
+				    transferMoney(quantity_traded * clearing_price, seller.AgentID, buyer.AgentID);
 
 				    //update agent price beliefs based on successful transaction
-				    var buyer_a = _agents[buyer.agent_id];
-				    var seller_a = _agents[seller.agent_id];
+				    var buyer_a = _agents[buyer.AgentID];
+				    var seller_a = _agents[seller.AgentID];
 				    buyer_a.updatePriceModel(this, "buy", good, true, clearing_price);
 				    seller_a.updatePriceModel(this, "sell", good, true, clearing_price);
 
@@ -454,12 +454,12 @@ namespace EconomySim
 				    successfulTrades++;
 			    }
 
-			    if (seller.units == 0)		//seller is out of offered good
+			    if (seller.Units == 0)		//seller is out of offered good
 			    {
 				    asks.RemoveAt(0); //.splice(0, 1);		//remove ask
 				    failsafe = 0;
 			    }
-			    if (buyer.units == 0)		//buyer is out of offered good
+			    if (buyer.Units == 0)		//buyer is out of offered good
 			    {
 				    bids.RemoveAt(0);//.splice(0, 1);		//remove bid
 				    failsafe = 0;
@@ -478,14 +478,14 @@ namespace EconomySim
 		    while (bids.Count > 0)
 		    {
 			    var buyer = bids[0];
-			    var buyer_a = _agents[buyer.agent_id];
+			    var buyer_a = _agents[buyer.AgentID];
 			    buyer_a.updatePriceModel(this,"buy",good, false);
 			    bids.RemoveAt(0);//.splice(0, 1);
 		    }
             while (asks.Count > 0)
 		    {
 			    var seller = asks[0];
-			    var seller_a = _agents[seller.agent_id];
+			    var seller_a = _agents[seller.AgentID];
 			    seller_a.updatePriceModel(this,"sell",good, false);
                 asks.RemoveAt(0);// splice(0, 1);
 		    }

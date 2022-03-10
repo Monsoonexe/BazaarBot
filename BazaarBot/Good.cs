@@ -2,12 +2,15 @@
 
 namespace EconomySim
 {
+	/// <summary>
+	/// Base class that represents something that can be bought and sold.
+	/// </summary>
     public class Good : ICloneable, IEquatable<Good>
     {
 		/// <summary>
 		/// Cached hash property to speed up dictionary hits.
 		/// </summary>
-		private int hashCode;
+		private readonly int hashCode;
 
 		/// <summary>
 		/// Human-readable identifier.

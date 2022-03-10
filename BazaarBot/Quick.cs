@@ -161,14 +161,14 @@ namespace EconomySim
 
         public static int sortOfferAcending(Offer a, Offer b)
         {
-            if (a.unit_price < b.unit_price) return -1;
-            if (a.unit_price > b.unit_price) return 1;
+            if (a.UnitPrice < b.UnitPrice) return -1;
+            if (a.UnitPrice > b.UnitPrice) return 1;
             return 0;
         }
         public static int sortOfferDecending(Offer a, Offer b)
         {
-            if (a.unit_price > b.unit_price) return -1;
-            if (a.unit_price < b.unit_price) return 1;
+            if (a.UnitPrice > b.UnitPrice) return -1;
+            if (a.UnitPrice < b.UnitPrice) return 1;
             return 0;
         }
 
