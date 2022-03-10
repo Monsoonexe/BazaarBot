@@ -8,7 +8,7 @@ namespace BazaarBot.Agents
      * An agent that performs the basic logic from the Doran & Parberry article
      * @author
      */
-    class Agent : BasicAgent
+    class Agent : AAgent
     {
 		/// <summary>
 		/// lowest possible price.
@@ -29,7 +29,7 @@ namespace BazaarBot.Agents
 		    double quantityToBuy = ideal > limit ? limit : ideal;
 		    if (quantityToBuy > 0)
 		    {
-			    return new Offer(id, good, quantityToBuy, bidPrice);
+			    return new Offer(ID, good, quantityToBuy, bidPrice);
 		    }
 		    return null;
 	    }
@@ -43,7 +43,7 @@ namespace BazaarBot.Agents
 
 		    if (quantity_to_sell > 0)
 		    {
-			    return new Offer(id, commodity_, quantity_to_sell, ask_price);
+			    return new Offer(ID, commodity_, quantity_to_sell, ask_price);
 		    }
 		    return null;
 	    }

@@ -16,12 +16,12 @@ namespace BazaarBot.Agents
 	     * @param	agent
 	     */
 
-	    public virtual void perform(BasicAgent agent, Market market)
+	    public virtual void perform(AAgent agent, Market market)
 	    {
 		    //no implemenation -- provide your own in a subclass
 	    }
 
-        protected void _produce(BasicAgent agent, String commodity, double amount, double chance = 1.0)
+        protected void _produce(AAgent agent, String commodity, double amount, double chance = 1.0)
 	    {
 		    if (chance >= 1.0 || Quick.rnd.NextDouble() < chance)
 		    {
@@ -29,7 +29,7 @@ namespace BazaarBot.Agents
 		    }
 	    }
 
-	    protected void _consume(BasicAgent agent, String commodity, double amount, double chance = 1.0)
+	    protected void _consume(AAgent agent, String commodity, double amount, double chance = 1.0)
 	    {
             if (chance >= 1.0 || Quick.rnd.NextDouble() < chance)
 		    {
@@ -49,11 +49,11 @@ namespace BazaarBot.Agents
 
     class LogicBlacksmith : Logic
     {
-        override public void perform(BasicAgent agent, Market market)
+        override public void perform(AAgent agent, Market market)
         {
-            var food = agent.queryInventory("food");
-            var metal = agent.queryInventory("metal");
-            var tools = agent.queryInventory("tools");
+            var food = agent.QueryQuantity("food");
+            var metal = agent.QueryQuantity("metal");
+            var tools = agent.QueryQuantity("tools");
             var need_tools = tools < 4;
 
             var has_food = food >= 1;
@@ -82,13 +82,13 @@ namespace BazaarBot.Agents
 
     class LogicFarmer : Logic
     {
-        override public void perform(BasicAgent agent, Market market)
+        override public void perform(AAgent agent, Market market)
         {
-            var wood = agent.queryInventory("wood");
-            var tools = agent.queryInventory("tools");
-            var food = agent.queryInventory("food");
+            var wood = agent.QueryQuantity("wood");
+            var tools = agent.QueryQuantity("tools");
+            var food = agent.QueryQuantity("food");
             var need_food = food < 10;
-            var work = agent.queryInventory("work");
+            var work = agent.QueryQuantity("work");
 
             var has_wood = wood >= 1;
             var has_tools = tools >= 1;
@@ -130,11 +130,11 @@ namespace BazaarBot.Agents
 
     class LogicMiner : Logic
     {
-        override public void perform(BasicAgent agent, Market market)
+        override public void perform(AAgent agent, Market market)
         {
-            var food = agent.queryInventory("food");
-            var tools = agent.queryInventory("tools");
-            var ore = agent.queryInventory("ore");
+            var food = agent.QueryQuantity("food");
+            var tools = agent.QueryQuantity("tools");
+            var ore = agent.QueryQuantity("ore");
             var need_ore = ore < 4;
 
             var has_food = food >= 1;
@@ -173,13 +173,13 @@ namespace BazaarBot.Agents
 
     class LogicRefiner : Logic
     {
-        override public void perform(BasicAgent agent, Market market)
+        override public void perform(AAgent agent, Market market)
         {
-            var food = agent.queryInventory("food");
-            var tools = agent.queryInventory("tools");
-            var ore = agent.queryInventory("ore");
+            var food = agent.QueryQuantity("food");
+            var tools = agent.QueryQuantity("tools");
+            var ore = agent.QueryQuantity("ore");
             if (ore > 4) ore = 4;
-            var metal = agent.queryInventory("metal");
+            var metal = agent.QueryQuantity("metal");
             var need_metal = metal < 4;
 
             var has_food = food >= 1;
@@ -202,7 +202,7 @@ namespace BazaarBot.Agents
                 else
                 {
                     //convert up to 2 ore into metal, consume 1 food
-                    var max = agent.queryInventory("ore");
+                    var max = agent.QueryQuantity("ore");
                     if (max > 2) { max = 2; }
                     _consume(agent, "ore", max);
                     _consume(agent, "food", 1);
@@ -223,11 +223,11 @@ namespace BazaarBot.Agents
 
     class LogicWoodcutter : Logic
     {
-        override public void perform(BasicAgent agent, Market market)
+        override public void perform(AAgent agent, Market market)
         {
-            var food = agent.queryInventory("food");
-            var tools = agent.queryInventory("tools");
-            var wood = agent.queryInventory("wood");
+            var food = agent.QueryQuantity("food");
+            var tools = agent.QueryQuantity("tools");
+            var wood = agent.QueryQuantity("wood");
             var need_wood = wood < 4;
 
             var has_food = food >= 1;
@@ -266,11 +266,11 @@ namespace BazaarBot.Agents
 
     class LogicWorker : Logic
     {
-        override public void perform(BasicAgent agent, Market market)
+        override public void perform(AAgent agent, Market market)
         {
-            var food = agent.queryInventory("food");
+            var food = agent.QueryQuantity("food");
             var has_food = food >= 1;
-            var work = agent.queryInventory("work");
+            var work = agent.QueryQuantity("work");
             var need_work = work < 1;
 
             _consume(agent, "food", 1);

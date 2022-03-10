@@ -86,7 +86,7 @@
     </Compile>
     <Compile Include="BazaarBot\Agents\Agent.cs" />
     <Compile Include="BazaarBot\Agents\AgentData.cs" />
-    <Compile Include="BazaarBot\Agents\BasicAgent.cs" />
+    <Compile Include="BazaarBot\Agents\AAgent.cs" />
     <Compile Include="BazaarBot\Collection_Extensions.cs" />
     <Compile Include="BazaarBot\ConstStrings.cs" />
     <Compile Include="BazaarBot\Economy.cs" />

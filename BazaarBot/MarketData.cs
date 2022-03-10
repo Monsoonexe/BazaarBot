@@ -7,9 +7,9 @@ namespace BazaarBot
     {
 	    public List<Good> goods;
 	    public List<AgentData>agentTypes;
-	    public List<BasicAgent> agents;
+	    public List<AAgent> agents;
 
-	    public MarketData(List<Good>goods, List<AgentData>agentTypes, List<BasicAgent> agents)
+	    public MarketData(List<Good>goods, List<AgentData>agentTypes, List<AAgent> agents)
 	    {
 		    this.goods = goods;
 		    this.agentTypes = agentTypes;
@@ -22,7 +22,7 @@ namespace BazaarBot
 	     * @param	getAgent	a function to create agents
 	     */
 
-	    public static MarketData fromJSON(string json, BasicAgent getAgent)
+	    public static MarketData fromJSON(string json, AAgent getAgent)
 	    {
             //var goods:Array<Good> = [];
 

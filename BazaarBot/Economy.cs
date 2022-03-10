@@ -39,7 +39,7 @@ namespace BazaarBot
 	    }
 
 
-	    public virtual void signalBankrupt(Market m, BasicAgent a)
+	    public virtual void signalBankrupt(Market m, AAgent a)
 	    {
 		    //no implemenation -- provide your own in a subclass
 	    }

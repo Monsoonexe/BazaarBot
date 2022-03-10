@@ -127,15 +127,15 @@ namespace BazaarBot
         }
         public static int RandomRange(int a, int b) => (int)RandomRange((double)a, (double)b);
 
-        public static int sortAgentAlpha(BasicAgent a, BasicAgent b)
+        public static int sortAgentAlpha(AAgent a, AAgent b)
         {
-            return String.Compare(a.className,b.className);
+            return String.Compare(a.ClassName,b.ClassName);
         }
 
-        public static int sortAgentId(BasicAgent a, BasicAgent b)
+        public static int sortAgentId(AAgent a, AAgent b)
         {
-            if (a.id < b.id) return -1;
-            if (a.id > b.id) return 1;
+            if (a.ID < b.ID) return -1;
+            if (a.ID > b.ID) return 1;
             return 0;
         }
 

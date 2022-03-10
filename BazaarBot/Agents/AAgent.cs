@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 namespace BazaarBot.Agents
 {
-    class BasicAgent
+    abstract class AAgent
     {
-	    public int id;				//unique integer identifier
-        public string className { get; set; }	//string identifier, "famer", "woodcutter", etc.
-        public double money { get; set; }
-        public double Space { get { return _inventory.GetEmptySpace(); } }
+		private const int DEFAULT_LOOKBACK = 15;
+
+	    public int ID { get; set; }			//unique integer identifier
+        public string ClassName { get; set; }	//string identifier, "famer", "woodcutter", etc.
+        public double Money { get; set; }
+        public double Space { get => _inventory.GetEmptySpace(); }
         public double nProduct { get; set; }
 
         //public var moneyLastRound(default, null):double;
@@ -18,7 +20,7 @@ namespace BazaarBot.Agents
         //public var destroyed(default, null):Bool;
         public bool destroyed; //dfs stub  needed?
         public double moneyLastRound; //dfs stub needed?
-        public double profit; //dfs stub needed?
+        public double profit; //dfs stub needed? //TODO - fill
 
         public double trackcosts;
 
@@ -30,31 +32,34 @@ namespace BazaarBot.Agents
 	    private double _profit = 0;	//profit from last round
 	    private int _lookback = 15;
 
+		public AAgent(int id, string className, double money, Inventory inventory, Logic logic, int? lookback)
+		{
+			this.ID = id;
+			this.ClassName = className;
+			this.Money = money;
+			this._inventory = inventory;
+			this._logic = logic;
+			this._lookback = lookback.HasValue ? lookback.Value : DEFAULT_LOOKBACK;
 
-	    public BasicAgent(int id, AgentData data)
+			_observedTradingRange = new Dictionary<string, List<double>>();
+			trackcosts = 0;
+		}
+
+	    public AAgent(int id, AgentData data)
 	    {
-		    this.id = id;
-		    className = data.ClassName;
-		    money = data.Money;
+		    this.ID = id;
+		    ClassName = data.ClassName;
+		    Money = data.Money;
 		    _inventory = new Inventory();
 		    _inventory.fromData(data.inventory);
 		    _logic = data.logic;
+			this._lookback = data.lookBack.HasValue ? data.lookBack.Value : DEFAULT_LOOKBACK;
 
-		    if (data.lookBack == null)
-		    {
-			    _lookback = 15;
-		    }
-		    else
-		    {
-			    _lookback = (int)data.lookBack;
-		    }
+			_observedTradingRange = new Dictionary<string, List<double>>();
+			trackcosts = 0;
+		}
 
-		    _observedTradingRange = new Dictionary<String, List<double>>();
-
-            trackcosts = 0;
-	    }
-
-	    public void destroy()
+	    public void Destroy()
 	    {
 		    destroyed = true;
 		    _inventory.destroy();
@@ -68,7 +73,7 @@ namespace BazaarBot.Agents
 		    _logic = null;
 	    }
 
-	    public void init(Market market)
+	    public void Init(Market market)
 	    {
 		    var listGoods = market.getGoods_unsafe();//List<String>
 		    foreach (string str in listGoods)
@@ -84,37 +89,21 @@ namespace BazaarBot.Agents
 		    }
 	    }
 
-	    public void simulate(Market market)
+	    public void Simulate(Market market)
 	    {
 		    _logic.perform(this, market);
 	    }
 
-        public virtual void GenerateOffers(Market bazaar, string good)
-	    {
-		    //no implemenation -- provide your own in a subclass
-	    }
+		public abstract void GenerateOffers(Market bazaar, string good);
 
-        public virtual void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice = 0)
-	    {
-		    //no implementation -- provide your own in a subclass
-	    }
+		public abstract void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice = 0);
 
-	    public virtual Offer? CreateBid(Market bazaar, String good, double limit)
-	    {
-		    //no implementation -- provide your own in a subclass
-		    return null;
-	    }
 
-        public virtual Offer? CreateAsk(Market bazaar, String commodity_, double limit_)
-	    {
-		    //no implementation -- provide your own in a subclass
-		    return null;
-	    }
+		public abstract Offer? CreateBid(Market bazaar, String good, double limit);
 
-	    public double queryInventory(String good)
-	    {
-		    return _inventory.QueryQuantity(good);
-	    }
+		public abstract Offer? CreateAsk(Market bazaar, String commodity_, double limit_);
+
+	    public double QueryQuantity(string good) => _inventory.QueryQuantity(good);
 
 	    public void produceInventory(String good, double delta)
 	    {
@@ -127,7 +116,7 @@ namespace BazaarBot.Agents
         {
             if (good == "money")
             {
-                money += delta;
+                Money += delta;
                 if (delta < 0)
                     trackcosts += (-delta);
             }
@@ -143,7 +132,7 @@ namespace BazaarBot.Agents
         {
             if (good == "money")
             {
-                money += delta;
+                Money += delta;
             }
             else
             {
@@ -166,7 +155,7 @@ namespace BazaarBot.Agents
 
 	    public double get_profit()
 	    {
-		    return money - moneyLastRound;
+		    return Money - moneyLastRound;
 	    }
 
 	    protected double determineSaleQuantity(Market bazaar, String commodity_)

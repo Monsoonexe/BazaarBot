@@ -9,7 +9,7 @@ namespace BazaarBot
 {
     interface ISignalBankrupt
     {
-        void signalBankrupt(Market m, BasicAgent agent);
+        void signalBankrupt(Market m, AAgent agent);
     }
 
     class Market
@@ -28,7 +28,7 @@ namespace BazaarBot
 	    private int _roundNum = 0;
 
 	    private List<string> _goodTypes;		//list of string ids for all the legal commodities
-	    public BindingList<BasicAgent> _agents;
+	    public BindingList<AAgent> _agents;
 	    public TradeBook _book;
 	    private Dictionary<string, AgentData> _mapAgents;
 	    private Dictionary<string, Good> _mapGoods;
@@ -41,7 +41,7 @@ namespace BazaarBot
 		    history = new History();
 		    _book = new TradeBook();
 		    _goodTypes = new List<string>();
-		    _agents = new BindingList<BasicAgent>();
+		    _agents = new BindingList<AAgent>();
 		    _mapGoods = new Dictionary<string, Good>();
 		    _mapAgents = new Dictionary<string, AgentData>();
 
@@ -63,12 +63,12 @@ namespace BazaarBot
 		    return _agents.Count;
 	    }
 
-	    public void replaceAgent(BasicAgent oldAgent, BasicAgent newAgent)
+	    public void replaceAgent(AAgent oldAgent, AAgent newAgent)
 	    {
-		    newAgent.id = oldAgent.id;
-		    _agents[oldAgent.id] = newAgent;
-		    oldAgent.destroy();
-		    newAgent.init(this);
+		    newAgent.ID = oldAgent.ID;
+		    _agents[oldAgent.ID] = newAgent;
+		    oldAgent.Destroy();
+		    newAgent.Init(this);
 	    }
 
 	    //@:access(bazaarbot.agent.BasicAgent)    //dfs stub ????
@@ -78,8 +78,8 @@ namespace BazaarBot
 		    {
 			    foreach (var agent in _agents)
 			    {
-				    agent.moneyLastRound = agent.money;
-				    agent.simulate(this);
+				    agent.moneyLastRound = agent.Money;
+				    agent.Simulate(this);
 
 				    foreach (var commodity in _goodTypes)
 				    {
@@ -91,10 +91,10 @@ namespace BazaarBot
 			    {
 				    resolveOffers(commodity);
 			    }
-                var del = new List<BasicAgent>();
+                var del = new List<AAgent>();
 			    foreach (var agent in _agents)
 			    {
-                    if (agent.money <= 0) del.Add(agent);  
+                    if (agent.Money <= 0) del.Add(agent);  
 			    }
                 while (del.Count > 0)
                 {
@@ -323,13 +323,13 @@ namespace BazaarBot
 
 			    foreach (var a in list)
 			    {
-                    if (a.className==key)
+                    if (a.ClassName==key)
                     {
                         count++;
-				        money += a.money;
+				        money += a.Money;
 				        for (int lic=0; lic<_goodTypes.Count; lic++)
 				        {
-					        inventory[lic] += a.queryInventory(_goodTypes[lic]);
+					        inventory[lic] += a.QueryQuantity(_goodTypes[lic]);
 				        }
                     }
 			    }
@@ -379,13 +379,13 @@ namespace BazaarBot
 		    }
 
 		    //Make the agent list
-		    _agents = new BindingList<BasicAgent>();
+		    _agents = new BindingList<AAgent>();
 
 		    var agentIndex = 0;
 		    foreach (var agent in data.agents)
 		    {
-			    agent.id = agentIndex;
-			    agent.init(this);
+			    agent.ID = agentIndex;
+			    agent.Init(this);
 			    _agents.Add(agent);
 			    agentIndex++;
 		    }
@@ -509,7 +509,7 @@ namespace BazaarBot
 			    avgPrice = history.Prices.Average(good,1);
 		    }
 
-            List<BasicAgent> ag = _agents.ToList<BasicAgent>();
+            List<AAgent> ag = _agents.ToList<AAgent>();
 		    ag.Sort(Quick.sortAgentAlpha);
 
 		    string curr_class = "";
@@ -520,7 +520,7 @@ namespace BazaarBot
 		    for (int i=0;i<ag.Count; i++)
 		    {
 			    var a = ag[i];		//get current agent
-			    curr_class = a.className;			//check its class
+			    curr_class = a.ClassName;			//check its class
 			    if (curr_class != last_class)		//new class?
 			    {
 				    if (list != null)				//do we have a list built up?
@@ -554,8 +554,8 @@ namespace BazaarBot
 	    {
 		    var seller = _agents[seller_id];
 		    var  buyer = _agents[buyer_id];
-		    seller.money += amount;
-		     buyer.money -= amount;
+		    seller.Money += amount;
+		     buyer.Money -= amount;
 	    }
 
     }

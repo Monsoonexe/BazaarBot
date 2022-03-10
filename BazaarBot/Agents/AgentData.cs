@@ -14,7 +14,7 @@ namespace BazaarBot.Agents
 
 		public InventoryData inventory;
 		public Logic logic;
-		public int? lookBack;
+		public int? lookBack; //TODO - broken value
 
 		public AgentData(string className, double money, string logicName)
 		{

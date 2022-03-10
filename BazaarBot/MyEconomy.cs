@@ -25,7 +25,7 @@ namespace BazaarBot
         {
             List<Good> goods = new List<Good>();
 	        List<AgentData>agentTypes = new List<AgentData>();
-	        List<BasicAgent> agents = new List<BasicAgent>();
+	        List<AAgent> agents = new List<AAgent>();
 
             goods.Add(new Good("food", 0.5));
             goods.Add(new Good("wood", 1.0));
@@ -86,7 +86,7 @@ namespace BazaarBot
                 for (int i = 0; i < 5; i++)
                 {
                     agents.Add(getAgent(agentTypes[iagent]));
-                    agents[agents.Count - 1].id = idc++;
+                    agents[agents.Count - 1].ID = idc++;
                 }
             }
 
@@ -112,12 +112,12 @@ namespace BazaarBot
         }
 
 
-	    public override void signalBankrupt(Market m, BasicAgent a)
+	    public override void signalBankrupt(Market m, AAgent a)
 	    {
 		    replaceAgent(m, a);
 	    }
 
-	    private void replaceAgent(Market market, BasicAgent agent)
+	    private void replaceAgent(Market market, AAgent agent)
 	    {
 		    var bestClass = market.getMostProfitableAgentClass();
 
@@ -207,7 +207,7 @@ namespace BazaarBot
         //    return new Agent(0, data);
         //}
 
-        private BasicAgent getAgent(AgentData data)
+        private AAgent getAgent(AgentData data)
         {
             data.logic = getLogic(data.LogicName);
             return new Agent(0, data);
