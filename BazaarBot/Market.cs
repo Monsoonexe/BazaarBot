@@ -353,20 +353,20 @@ namespace EconomySim
 		    //Create commodity index
 		    foreach (var g in data.goods)
 		    {
-			    _goodTypes.Add(g.id);
-			    _mapGoods[g.id] = new Good(g.id, g.size);
+			    _goodTypes.Add(g.ID);
+			    _mapGoods[g.ID] = new Good(g.ID, g.Size);
 
                 double v = 1.0;
-                if (g.id == "metal") v = 2.0;
-                if (g.id == "tools") v = 3.0;
+                if (g.ID == "metal") v = 2.0;
+                if (g.ID == "tools") v = 3.0;
 
-			    history.register(g.id);
-                history.prices.add(g.id, v);	//start the bidding at $1!
-                history.asks.add(g.id, v);	//start history charts with 1 fake buy/sell bid
-                history.bids.add(g.id, v);
-                history.trades.add(g.id, v);
+			    history.register(g.ID);
+                history.prices.add(g.ID, v);	//start the bidding at $1!
+                history.asks.add(g.ID, v);	//start history charts with 1 fake buy/sell bid
+                history.bids.add(g.ID, v);
+                history.trades.add(g.ID, v);
 
-			    _book.register(g.id);
+			    _book.register(g.ID);
 		    }
 
 		    _mapAgents = new Dictionary<String, AgentData>();

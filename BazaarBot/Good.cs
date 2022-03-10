@@ -1,25 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace EconomySim
 {
-
-    class Good
+    public class Good : ICloneable, IEquatable<Good>
     {
-	    public String id = "";		//string id of good
-	    public double size = 1.0;	//inventory size taken up
+		/// <summary>
+		/// Cached hash property to speed up dictionary hits.
+		/// </summary>
+		private int hashCode;
 
-	    public Good (String id_, double size_)
+		/// <summary>
+		/// Human-readable identifier.
+		/// </summary>
+	    public string ID { get; protected set; }
+
+		/// <summary>
+		/// Inventory space taken up.
+		/// </summary>
+	    public double Size { get; protected set; }
+
+	    public Good (string id, double size)
 	    {
-		    id = id_;
-		    size = size_;
+		    ID = id;
+		    Size = size;
+			hashCode = ID.GetHashCode();
 	    }
 
-	    public Good copy()
+	    public object Clone()
 	    {
-		    return new Good(id, size);
+		    return new Good(ID, Size);
 	    }
-    }
+
+		public bool Equals(Good other)
+			=> Size == other.Size && ID == other.ID;
+
+		public override int GetHashCode() => hashCode;
+	}
 }
