@@ -18,7 +18,7 @@ namespace BazaarBot
 
             MarketData data = GetMarketData();
             market.init(data); // market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent));
-		    addMarket(market);
+		    AddMarket(market);
 	    }
 
         private MarketData GetMarketData()

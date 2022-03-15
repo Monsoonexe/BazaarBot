@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BazaarBot
 {
@@ -11,20 +9,20 @@ namespace BazaarBot
 
 	    //private static var _index:Map<String, Commodity>;
 
-	    private Dictionary<String, Point>_stuff;		// key:commodity_id, val:amount, original_cost
-	    private Dictionary<String, double>_ideal;		// ideal counts for each thing
-	    private Dictionary<String, double>_sizes;		// how much space each thing takes up
+	    private Dictionary<string, Point>_stuff;		// key:commodity_id, val:amount, original_cost
+	    private Dictionary<string, double>_ideal;		// ideal counts for each thing
+	    private Dictionary<string, double>_sizes;		// how much space each thing takes up
 
 
 	    public Inventory()
 	    {
-		    _sizes = new Dictionary<String, double>();
-		    _stuff = new Dictionary<String, Point>();
-		    _ideal = new Dictionary<String, double>();
+		    _sizes = new Dictionary<string, double>();
+		    _stuff = new Dictionary<string, Point>();
+		    _ideal = new Dictionary<string, double>();
 		    maxSize = 0;
 	    }
 
-	    public void fromData(InventoryData data)
+	    public void FromData(InventoryData data)
 	    {
 		    var sizes = new List<string>();
 		    var amountsp = new List<Point>();
@@ -33,7 +31,7 @@ namespace BazaarBot
 			    sizes.Add(key);
 			    amountsp.Add(new Point(data.start[key],0));
 		    }
-		    setStuff(sizes, amountsp);
+		    SetStuff(sizes, amountsp);
 		    sizes = new List<string>();
 		    var amounts = new List<double>();
 		    foreach (string key in data.size.Keys)
@@ -77,7 +75,7 @@ namespace BazaarBot
 			    sizesf.Add(_sizes[key]);
 			    sizesi.Add(key);
 		    }
-		    i.setStuff(stuffi, stufff);
+		    i.SetStuff(stuffi, stufff);
 		    i.setIdeal(ideali, idealf);
 		    i.setSizes(sizesi, sizesf);
 		    i.maxSize = maxSize;
@@ -100,7 +98,7 @@ namespace BazaarBot
 	     * @param	amounts_
 	     */
 
-	    public void setStuff(List<String>stuff, List<Point>amounts)
+	    public void SetStuff(IList<string>stuff, IList<Point>amounts)
 	    {
 		    for (int i=0; i<stuff.Count; i++)
 		    {
@@ -136,7 +134,7 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double QueryQuantity(String good)
+	    public double QueryQuantity(string good)
 	    {
 		    if (_stuff.ContainsKey(good))
 		    {
@@ -144,7 +142,7 @@ namespace BazaarBot
 		    }
 		    return 0;
 	    }
-        public double QueryCost(String good)
+        public double QueryCost(string good)
         {
             if (_stuff.ContainsKey(good))
             {
@@ -153,7 +151,7 @@ namespace BazaarBot
             return 0;
         }
 
-	    public double ideal(String good)
+	    public double GetIdealValue(string good)
 	    {
 		    if (_ideal.ContainsKey(good))
 		    {
@@ -164,16 +162,16 @@ namespace BazaarBot
 
 	    public double GetEmptySpace()
 	    {
-		    return maxSize - getUsedSpace();
+		    return maxSize - GetUsedSpace();
 	    }
 
-	    public double getUsedSpace()
+	    public double GetUsedSpace()
 	    {
 		    double space_used = 0;
 		    foreach (string key in _stuff.Keys)
 		    {
-                if (!_sizes.ContainsKey(key)) continue;
-			    space_used += _stuff[key].x * _sizes[key];
+                if (_sizes.TryGetValue(key, out var amt))
+					space_used += _stuff[key].x * amt;
 		    }
 		    return space_used;
 	    }

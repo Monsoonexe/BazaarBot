@@ -72,7 +72,7 @@ namespace BazaarBot
 	    }
 
 	    //@:access(bazaarbot.agent.BasicAgent)    //dfs stub ????
-	    public void simulate(int rounds)
+	    public void Simulate(int rounds)
 	    {
 		    for (int round=0; round<rounds; round++)
 		    {
@@ -367,7 +367,7 @@ namespace BazaarBot
                 history.Bids.Add(g.ID, v);
                 history.Trades.Add(g.ID, v);
 
-			    _book.register(g.ID);
+			    _book.Register(g.ID);
 		    }
 
 		    _mapAgents = new Dictionary<String, AgentData>();

@@ -51,7 +51,7 @@ namespace BazaarBot.Agents
 		    ClassName = data.ClassName;
 		    Money = data.Money;
 		    _inventory = new Inventory();
-		    _inventory.fromData(data.inventory);
+		    _inventory.FromData(data.inventory);
 		    _logic = data.logic;
 			this._lookback = data.lookBack.HasValue ? data.lookBack.Value : DEFAULT_LOOKBACK;
 

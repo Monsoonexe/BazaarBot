@@ -1,43 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BazaarBot.Agents;
 
 namespace BazaarBot
 {
     class Economy : ISignalBankrupt
     {
-	    private List<Market> _markets;
+	    private readonly List<Market> markets;
 
         public Economy()
 	    {
-		    _markets = new List<Market>();
+		    markets = new List<Market>();
 	    }
 
-	    public void addMarket(Market m)
-	    {
-		    if (_markets.IndexOf(m) == -1)
-		    {
-			    _markets.Add(m);
-		    }
-	    }
+	    public void AddMarket(Market m)
+			=> markets.AddIfNew(m);
 
-	    public Market getMarket(String name)
+	    public Market GetMarket(string name)
 	    {
-		    foreach (var m in _markets)
+		    foreach (var m in markets)
 		    {
 			    if (m.name == name) return m;
 		    }
 		    return null;
 	    }
 
-	    public void simulate(int rounds)
+	    public void SimulateMarkets(int rounds)
 	    {
-		    foreach (var m in _markets)
-		    {
-			    m.simulate(rounds);
-		    }
+		    foreach (var m in markets)
+			    m.Simulate(rounds);
 	    }
-
 
 	    public virtual void signalBankrupt(Market m, AAgent a)
 	    {
