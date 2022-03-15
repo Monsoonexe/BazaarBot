@@ -16,17 +16,6 @@ namespace BazaarBot
             return (a + b) / 2;
         }
 
-        public static double listAvgf(List<double> list)
-        {
-            double avg=0;
-            for (int j = 0; j < list.Count; j++)
-            {
-                avg += list[j];
-            }
-            avg /= list.Count;
-            return avg;
-        }
-
         public static double minArr(List<double> a, int window)
         {
             double min = 99999999;//Math.POSITIVE_INFINITY;

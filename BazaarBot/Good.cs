@@ -17,24 +17,18 @@ namespace BazaarBot
 		/// </summary>
 	    public string ID { get; protected set; }
 
-		/// <summary>
-		/// Inventory space taken up.
-		/// </summary>
-	    public double Size { get; protected set; }
-
-	    public Good (string id, double size)
+	    public Good (string id)
 	    {
 		    ID = id;
-		    Size = size;
 			hashCode = ID.GetHashCode();
 	    }
 
-	    public object Clone() => new Good(ID, Size);
+	    public object Clone() => new Good(ID);
 
 		public Good Copy() => Clone() as Good;
 
 		public bool Equals(Good other)
-			=> Size == other.Size && ID == other.ID;
+			=> hashCode == other.hashCode;
 
 		public override bool Equals(object obj)
 			=> obj is Good other && Equals(other);

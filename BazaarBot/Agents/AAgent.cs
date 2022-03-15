@@ -26,9 +26,9 @@ namespace BazaarBot.Agents
 
 	    /********PRIVATE************/
 
-	    private Logic _logic;
+	    private Logic logic;
 	    protected Inventory _inventory;
-	    protected Dictionary<string,List<double>> _observedTradingRange;
+	    protected Dictionary<Good, List<double>> observedTradingRange;
 	    private double _profit = 0;	//profit from last round
 	    private int _lookback = 15;
 
@@ -38,10 +38,10 @@ namespace BazaarBot.Agents
 			this.ClassName = className;
 			this.Money = money;
 			this._inventory = inventory;
-			this._logic = logic;
+			this.logic = logic;
 			this._lookback = lookback.HasValue ? lookback.Value : DEFAULT_LOOKBACK;
 
-			_observedTradingRange = new Dictionary<string, List<double>>();
+			observedTradingRange = new Dictionary<Good, List<double>>();
 			trackcosts = 0;
 		}
 
@@ -52,96 +52,106 @@ namespace BazaarBot.Agents
 		    Money = data.Money;
 		    _inventory = new Inventory();
 		    _inventory.FromData(data.inventory);
-		    _logic = data.logic;
+		    logic = data.logic;
 			this._lookback = data.lookBack.HasValue ? data.lookBack.Value : DEFAULT_LOOKBACK;
 
-			_observedTradingRange = new Dictionary<string, List<double>>();
+			observedTradingRange = new Dictionary<Good, List<double>>();
 			trackcosts = 0;
 		}
 
 	    public void Destroy()
 	    {
 		    destroyed = true;
-		    _inventory.destroy();
-		    foreach (string key in _observedTradingRange.Keys)
+		    _inventory.Destroy();
+		    foreach (Good key in observedTradingRange.Keys)
 		    {
-			    var list = _observedTradingRange[key];
+			    var list = observedTradingRange[key];
                 list.Clear();
 		    }
-            _observedTradingRange.Clear();
-		    _observedTradingRange = null;
-		    _logic = null;
+            observedTradingRange.Clear();
+		    observedTradingRange = null;
+		    logic = null;
 	    }
 
 	    public void Init(Market market)
 	    {
-		    var listGoods = market.getGoods_unsafe();//List<String>
-		    foreach (string str in listGoods)
+			List<Good> listGoods = market.GoodsTypes;
+			foreach (Good str in listGoods)
 		    {
 			    var trades = new List<double>();
 
+				//TODO - guess price
                 var price = 2;// market.getAverageHistoricalPrice(str, _lookback);
 			    trades.Add(price * 1.0);
 			    trades.Add(price * 3.0);	//push two fake trades to generate a range
 
 			    //set initial price belief & observed trading range
-			    _observedTradingRange[str]=trades;
+			    observedTradingRange[str]=trades;
 		    }
 	    }
 
 	    public void Simulate(Market market)
 	    {
-		    _logic.perform(this, market);
+		    logic.perform(this, market);
 	    }
 
-		public abstract void GenerateOffers(Market bazaar, string good);
+		public abstract void GenerateOffers(Market bazaar, Good good);
 
-		public abstract void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice = 0);
+		public abstract void UpdatePriceModel(Market bazaar, string act, Good good, bool success, double unitPrice = 0);
 
-		public abstract Offer? CreateBid(Market bazaar, String good, double limit);
+		public abstract Offer? CreateBid(Market bazaar, GoodStack stack);
 
-		public abstract Offer? CreateAsk(Market bazaar, String commodity_, double limit_);
+		public abstract Offer? CreateAsk(Market bazaar, GoodStack stack);
 
-	    public double QueryQuantity(string good) => _inventory.QueryQuantity(good);
+	    public double QueryQuantity(Good good) => _inventory.QueryQuantity(good);
 
-	    public void ProduceInventory(String good, double delta)
-	    {
-            if (trackcosts < 1) trackcosts = 1;
-            double curunitcost = _inventory.change(good, delta, trackcosts / delta);
-            trackcosts = 0;
-	    }
+		public void ProduceInventory(GoodStack stack)
+			=> ProduceInventory(stack.Good, stack.Quantity);
 
-        public void ConsumeInventory(String good, double delta)
-        {
-            if (good == "money")
-            {
-                Money += delta;
-                if (delta < 0)
-                    trackcosts += (-delta);
-            }
-            else
-            {
-                double curunitcost = _inventory.change(good, delta, 0);
-                if (delta < 0)
-                    trackcosts += (-delta) * curunitcost;
-            }
-        }
+		public void ProduceInventory(Good good, double delta)
+		{
+			if (trackcosts < 1) trackcosts = 1;
+			double curunitcost = _inventory.Change(good, delta, trackcosts / delta);
+			trackcosts = 0;
+		}
 
-        public void changeInventory(String good, double delta, double unit_cost)
-        {
-            if (good == "money")
-            {
-                Money += delta;
-            }
-            else
-            {
-                _inventory.change(good, delta, unit_cost);
-            }
-        }
+		public void ConsumeInventory(GoodStack stack)
+			=> ConsumeInventory(stack.Good, stack.Quantity);
 
-	    /********PRIVATE************/
+		public void ConsumeInventory(Good good, double delta)
+		{
+			if (good.ID == "money")
+			{
+				Money += delta;
+				if (delta < 0)
+					trackcosts += (-delta);
+			}
+			else
+			{
+				double currentCost = _inventory.Change(good, delta, 0);
+				if (delta < 0)
+					trackcosts += (-delta) * currentCost;
+			}
+		}
 
-	    public bool get_inventoryFull()
+		public void ChangeInventory(GoodStack stack, double unitCost)
+			=> ChangeInventory(stack.Good, stack.Quantity, unitCost);
+
+		public void ChangeInventory(Good good, double delta, double unit_cost)
+		{
+			if (good.ID == "money")
+			{
+				Money += delta;
+			}
+			else
+			{
+				_inventory.Change(good, delta, unit_cost);
+			}
+		}
+
+		/********PRIVATE************/
+
+		public bool get_inventoryFull()
 	    {
 		    return _inventory.GetEmptySpace() == 0;
 	    }
@@ -151,10 +161,10 @@ namespace BazaarBot.Agents
 		    return profit = Money - moneyLastRound;
 	    }
 
-	    protected double determineSaleQuantity(Market bazaar, String commodity_)
+	    protected double determineSaleQuantity(Market bazaar, Good commodity_)
 	    {
-		    var mean = bazaar.GetAverageHistoricalPrice(commodity_,_lookback); //double
-		    var trading_range = ObserveTradingRange(commodity_,10);//point
+		    var mean = bazaar.GetAverageHistoricalPrice(commodity_, _lookback); //double
+		    var trading_range = ObserveTradingRange(commodity_, 10);//point
 		    if (trading_range != null && mean>0)
 		    {
 			    var favorability= Quick.positionInRange(mean, trading_range.Value.x, trading_range.Value.y);//double
@@ -172,7 +182,7 @@ namespace BazaarBot.Agents
 		    return 0;
 	    }
 
-        protected double DeterminePurchaseQuantity(Market bazaar, string commodity_)
+        protected double DeterminePurchaseQuantity(Market bazaar, Good commodity_)
 	    {
 		    var mean = bazaar.GetAverageHistoricalPrice(commodity_, _lookback);//double
 		    var trading_range = ObserveTradingRange(commodity_, 10); //Point
@@ -192,10 +202,10 @@ namespace BazaarBot.Agents
 		    return 0;
 	    }
 
-	    private Point? ObserveTradingRange(String good, int window)
+	    private Point? ObserveTradingRange(Good good, int window)
 	    {
-		    var a = _observedTradingRange[good]; //List<double>
-		    var pt = new Point(Quick.minArr(a,window), Quick.maxArr(a,window));
+		    List<double> a = observedTradingRange[good]; 
+		    Point pt = new Point(Quick.minArr(a,window), Quick.maxArr(a,window));
 		    return pt;
 	    }
     }

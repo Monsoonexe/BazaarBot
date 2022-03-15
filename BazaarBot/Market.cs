@@ -9,7 +9,7 @@ namespace BazaarBot
 {
     interface ISignalBankrupt
     {
-        void signalBankrupt(Market m, AAgent agent);
+        void signalBankrupt(Market market, AAgent agent);
     }
 
     internal class Market
@@ -22,27 +22,29 @@ namespace BazaarBot
 	    /**Signal fired when an agent's money reaches 0 or below**/
 	    public ISignalBankrupt signalBankrupt;
 
-
 	    /********PRIVATE*********/
 
 	    private int _roundNum = 0;
 
-	    private List<string> _goodTypes;		//list of string ids for all the legal commodities
+		/// <summary>
+		/// list of all the legal commodities
+		/// </summary>
+		private List<Good> goodTypes;
+		public List<Good> GoodsTypes => goodTypes;
 	    public BindingList<AAgent> _agents;
-	    public TradeBook _book;
+	    public readonly TradeBook Book;
 	    private Dictionary<string, AgentData> _mapAgents;
-	    private Dictionary<string, Good> _mapGoods;
-        
+	    private Dictionary<string, GoodStack> _mapGoods;
         
         public Market(string name, ISignalBankrupt isb)
 	    {
 		    this.name = name;
 
 		    history = new History();
-		    _book = new TradeBook();
-		    _goodTypes = new List<string>();
+		    Book = new TradeBook();
+		    goodTypes = new List<Good>();
 		    _agents = new BindingList<AAgent>();
-		    _mapGoods = new Dictionary<string, Good>();
+		    _mapGoods = new Dictionary<string, GoodStack>();
 		    _mapAgents = new Dictionary<string, AgentData>();
 
 		    signalBankrupt = isb;//new TypedSignal<Market->BasicAgent->Void>();
@@ -55,7 +57,7 @@ namespace BazaarBot
 
 	    public int numTypesOfGood()
 	    {
-		    return _goodTypes.Count;
+		    return goodTypes.Count;
 	    }
 
 	    public int numAgents()
@@ -80,13 +82,13 @@ namespace BazaarBot
 				    agent.moneyLastRound = agent.Money;
 				    agent.Simulate(this);
 
-				    foreach (var commodity in _goodTypes)
+				    foreach (var commodity in goodTypes)
 				    {
 					    agent.GenerateOffers(this, commodity);
 				    }
 			    }
 
-			    foreach (var commodity in _goodTypes)
+			    foreach (var commodity in goodTypes)
 			    {
 				    ResolveOffers(commodity);
 			    }
@@ -106,12 +108,12 @@ namespace BazaarBot
 
 	    public void Ask(Offer offer)
 	    {
-		    _book.ask(offer);
+		    Book.ask(offer);
 	    }
 
 	    public void Bid(Offer offer)
 	    {
-		    _book.bid(offer);
+		    Book.bid(offer);
 	    }
 
 	    /**
@@ -121,10 +123,8 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double GetAverageHistoricalPrice(string good, int range)
-	    {
-		    return history.Prices.Average(good, range);
-	    }
+	    public double GetAverageHistoricalPrice(Good good, int range)
+		    => history.Prices.Average(good, range);
 
 	    /**
 	     * Get the good with the highest demand/supply ratio over time
@@ -133,11 +133,11 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public String getHottestGood(double minimum = 1.5, int range = 10)
+	    public Good GetHottestGood(double minimum = 1.5, int range = 10)
 	    {
-		    string best_market = "";
-            double best_ratio = -99999;// Math.NEGATIVE_INFINITY;
-		    foreach (var good in _goodTypes)
+		    Good best_market = null;
+			double best_ratio = double.MinValue;
+		    foreach (var good in goodTypes)
 		    {
 			    var asks = history.Asks.Average(good, range);
 			    var bids = history.Bids.Average(good, range);
@@ -147,7 +147,6 @@ namespace BazaarBot
 			    {
 				    //If there are NONE on the market we artificially create a fake supply of 1/2 a unit to avoid the
 				    //crazy bias that "infinite" demand can cause...
-
 				    asks = 0.5;
 			    }
 
@@ -169,11 +168,11 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public String getCheapestGood(int range, List<String> exclude = null)
+	    public Good GetCheapestGood(int range, List<Good> exclude = null)
 	    {
-            double best_price = -9999999;// Math.POSITIVE_INFINITY;
-		    string best_good = "";
-		    foreach (var g in _goodTypes)
+            double best_price = double.MinValue;
+		    Good best_good = null;
+		    foreach (var g in goodTypes)
 		    {
 			    if (exclude == null || !exclude.Contains(g))
 			    {
@@ -194,11 +193,11 @@ namespace BazaarBot
 		/// <param name="range">how many rounds to look back</param>
 		/// <param name="exclude">goods to exclude</param>
 		/// <returns></returns>
-		public string GetDearestGood(int range, List<String> exclude= null)
+		public Good GetDearestGood(int range, List<Good> exclude= null)
 	    {
 		    double best_price = 0;
-		    string best_good = "";
-		    foreach (var g in _goodTypes)
+			Good best_good = null;
+		    foreach (var g in goodTypes)
 		    {
 			    if (exclude == null || !exclude.Contains(g))
 			    {
@@ -218,54 +217,37 @@ namespace BazaarBot
 	     * @param	range
 	     * @return
 	     */
-	    public String getMostProfitableAgentClass(int range= 10)
+	    public Good GetMostProfitableAgentClass(int range= 10)
 	    {
-            double best = -999999;// Math.NEGATIVE_INFINITY;
-		    String bestClass="";
+            double best = double.MinValue;
+			Good bestClass = null;
 		    foreach (var className in _mapAgents.Keys)
 		    {
 			    double val = history.Profit.Average(className, range);
 			    if (val > best)
 			    {
-				    bestClass = className;
+				    bestClass = new Good(className);
 				    best = val;
 			    }
 		    }
 		    return bestClass;
 	    }
 
-	    public AgentData getAgentClass(String className)
-	    {
-		    return _mapAgents[className];
-	    }
+	    public AgentData GetAgentClass(Good good)
+		    => _mapAgents[good.ID];
 
-	    public List<String> getAgentClassNames()
+		/// <summary>
+		/// Get the <see cref="Good"/>s that an <see cref="Agent"/> uses.
+		/// </summary>
+		/// <returns></returns>
+	    public List<string> GetAgentClassNames()
 	    {
-		    var agentData = new List<String> ();
+		    var agentData = new List<string>();
 		    foreach (var key in _mapAgents.Keys)
 		    {
 			    agentData.Add(key);
 		    }
 		    return agentData;
-	    }
-
-	    public List<String> getGoods()
-	    {
-            return new List<String>(_goodTypes);
-	    }
-
-	    public List<String> getGoods_unsafe()
-	    {
-		    return _goodTypes;
-	    }
-
-	    public Good getGoodEntry(string str)
-	    {
-		    if (_mapGoods.ContainsKey(str))
-		    {
-			    return (Good)_mapGoods[str].Clone();
-		    }
-		    return null;
 	    }
 
 	    /********REPORT**********/
@@ -285,7 +267,7 @@ namespace BazaarBot
 
 		    mr.arrStrListInventory = new List<String>();
 
-		    foreach (var commodity in _goodTypes)
+		    foreach (var commodity in goodTypes)
 		    {
 			    mr.strListGood += commodity + "\n";
 
@@ -306,7 +288,7 @@ namespace BazaarBot
 		    foreach (var key in _mapAgents.Keys)
 		    {
 			    var inventory = new List<double>();
-			    foreach (var str in _goodTypes)
+			    foreach (var str in goodTypes)
 			    {
 				    inventory.Add(0);
 			    }
@@ -314,26 +296,25 @@ namespace BazaarBot
 			    var profit = history.Profit.Average(key, rounds);
 			    mr.strListAgentProfit += Quick.numStr(profit, 2) + "\n";
 
-			    double test_profit = 0;
 			    var list = _agents; //var list = _agents.filter(function(a:BasicAgent):Bool { return a.className == key; } );  dfs stub wtf
 			    int count = 0;
 			    double money = 0;
 
 			    foreach (var a in list)
 			    {
-                    if (a.ClassName==key)
+                    if (a.ClassName == key)
                     {
                         count++;
 				        money += a.Money;
-				        for (int lic=0; lic<_goodTypes.Count; lic++)
+				        for (int lic=0; lic<goodTypes.Count; lic++)
 				        {
-					        inventory[lic] += a.QueryQuantity(_goodTypes[lic]);
+					        inventory[lic] += a.QueryQuantity(goodTypes[lic]);
 				        }
                     }
 			    }
 
 			    money /= count;
-			    for (int lic =0; lic<_goodTypes.Count; lic++)
+			    for (int lic =0; lic<goodTypes.Count; lic++)
 			    {
 				    inventory[lic] /= count;
 				    mr.arrStrListInventory[lic] += Quick.numStr(inventory[lic],1) + "\n";
@@ -350,30 +331,30 @@ namespace BazaarBot
 	    private void FromData(MarketData data)
 	    {
 		    //Create commodity index
-		    foreach (var g in data.goods)
+		    foreach (var stack in data.goods)
 		    {
-			    _goodTypes.Add(g.ID);
-			    _mapGoods[g.ID] = new Good(g.ID, g.Size);
+			    goodTypes.Add(stack.Good);
+			    _mapGoods[stack.Good.ID] = new GoodStack(stack.Good, stack.Quantity);
 
                 double v = 1.0;
-                if (g.ID == "metal") v = 2.0;
-                if (g.ID == "tools") v = 3.0;
+                if (stack.Good.ID == "metal") v = 2.0;
+                if (stack.Good.ID == "tools") v = 3.0;
 
-			    history.Register(g.ID);
-                history.Prices.Add(g.ID, v);	//start the bidding at $1!
-                history.Asks.Add(g.ID, v);	//start history charts with 1 fake buy/sell bid
-                history.Bids.Add(g.ID, v);
-                history.Trades.Add(g.ID, v);
+			    history.Register(stack.Good);
+                history.Prices.Add(stack.Good, v);	//start the bidding at $1!
+                history.Asks.Add(stack.Good, v);	//start history charts with 1 fake buy/sell bid
+                history.Bids.Add(stack.Good, v);
+                history.Trades.Add(stack.Good, v);
 
-			    _book.Register(g.ID);
+			    Book.Register(stack.Good);
 		    }
 
-		    _mapAgents = new Dictionary<String, AgentData>();
+		    _mapAgents = new Dictionary<string, AgentData>();
 
-		    foreach (var aData in data.agentTypes)
+		    foreach (var agentData in data.agentTypes)
 		    {
-			    _mapAgents[aData.ClassName] = aData;
-			    history.Profit.Register(aData.ClassName);
+			    _mapAgents[agentData.ClassName] = agentData;
+			    history.Profit.Register(new Good(agentData.ClassName));
 		    }
 
 		    //Make the agent list
@@ -389,10 +370,10 @@ namespace BazaarBot
 		    }
 	    }
 
-	    private void ResolveOffers(string good= "")
+	    private void ResolveOffers(Good good)
 	    {
-		    var bids = _book.bids[good];
-		    var asks = _book.asks[good];
+		    var bids = Book.bids[good];
+		    var asks = Book.asks[good];
 
 			bids.Shuffle();
 			asks.Shuffle();
@@ -511,9 +492,8 @@ namespace BazaarBot
 		    string curr_class = "";
 		    string last_class = "";
 		    List<double> list  = null;
-		    double avg_profit = 0;
 
-		    for (int i=0;i<ag.Count; i++)
+		    for (int i = 0; i < ag.Count; i++)
 		    {
 			    var a = ag[i];		//get current agent
 			    curr_class = a.ClassName;			//check its class
@@ -522,7 +502,7 @@ namespace BazaarBot
 				    if (list != null)				//do we have a list built up?
 				    {
 					    //log last class' profit
-					    history.Profit.Add(last_class, Quick.listAvgf(list));
+					    history.Profit.Add(new Good(last_class), list.Average());
 				    }
 				    list = new List<double>();		//make a new list
 				    last_class = curr_class;
@@ -531,27 +511,23 @@ namespace BazaarBot
 		    }
 
 		    //add the last class too
-		    history.Profit.Add(last_class, Quick.listAvgf(list));
-
-		    //sort by id so everything works again
-		    //_agents.Sort(Quick.sortAgentId);
-
+		    history.Profit.Add(new Good(last_class), list.Average());
 	    }
 
-	    private void TransferGood(string good, double units, int seller_id, int buyer_id, double clearing_price)
+	    private void TransferGood(Good good, double units, int seller_id, int buyer_id, double clearing_price)
 	    {
 		    var seller = _agents[seller_id];
-		    var  buyer = _agents[buyer_id];
-		    seller.changeInventory(good, -units, 0);
-		     buyer.changeInventory(good,  units, clearing_price);
+		    var buyer = _agents[buyer_id];
+		    seller.ChangeInventory(good, -units, 0);
+		    buyer.ChangeInventory(good, units, clearing_price);
 	    }
 
 	    private void TransferMoney(double amount, int seller_id, int buyer_id)
 	    {
 		    var seller = _agents[seller_id];
-		    var  buyer = _agents[buyer_id];
+		    var buyer = _agents[buyer_id];
 		    seller.Money += amount;
-		     buyer.Money -= amount;
+		    buyer.Money -= amount;
 	    }
 
     }

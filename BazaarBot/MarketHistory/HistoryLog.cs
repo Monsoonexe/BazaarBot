@@ -5,12 +5,12 @@ namespace BazaarBot.MarketHistory
 	class HistoryLog
 	{
 		public readonly EconNoun Type;
-		private readonly Dictionary<string, List<double>> log;
+		private readonly Dictionary<Good, List<double>> log;
 
 		public HistoryLog(EconNoun type)
 		{
 			Type = type;
-			log = new Dictionary<string, List<double>>();
+			log = new Dictionary<Good, List<double>>();
 		}
 
 		/**
@@ -18,7 +18,7 @@ namespace BazaarBot.MarketHistory
 	     * @param	name
 	     * @param	amount
 	     */
-		public void Add(string name, double amount)
+		public void Add(Good name, double amount)
 		{
 			if (log.TryGetValue(name, out List<double> list))
 				list.Add(amount);
@@ -28,7 +28,7 @@ namespace BazaarBot.MarketHistory
 	     * Register a new category list in this log
 	     * @param	name
 	     */
-		public void Register(string name)
+		public void Register(Good name)
 		{
 			if (!log.ContainsKey(name))
 			{
@@ -36,13 +36,22 @@ namespace BazaarBot.MarketHistory
 			}
 		}
 
-		/**
-	     * Returns the average amount of the given category, looking backwards over a specified range
-	     * @param	name the category of thing
-	     * @param	range how far to look back
-	     * @return
-	     */
+		/// <summary>
+		/// Returns the average amount of the given category, looking backwards over a specified range
+		/// </summary>
+		/// <param name="name">the category of <see cref="Good"/>.</param>
+		/// <param name="range">how far to look back</param>
+		/// <returns></returns>
 		public double Average(string name, int range)
+			=> Average(new Good(name), range);
+
+		/// <summary>
+		/// Returns the average amount of the given category, looking backwards over a specified range
+		/// </summary>
+		/// <param name="name">the category of <see cref="Good"/>.</param>
+		/// <param name="range">how far to look back</param>
+		/// <returns></returns>
+		public double Average(Good name, int range)
 		{
 			if (log.TryGetValue(name, out List<double> list))
 			{

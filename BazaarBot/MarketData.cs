@@ -5,11 +5,11 @@ namespace BazaarBot
 {
     class MarketData
     {
-	    public List<Good> goods;
+	    public List<GoodStack> goods;
 	    public List<AgentData>agentTypes;
 	    public List<AAgent> agents;
 
-	    public MarketData(List<Good>goods, List<AgentData>agentTypes, List<AAgent> agents)
+	    public MarketData(List<GoodStack> goods, List<AgentData>agentTypes, List<AAgent> agents)
 	    {
 		    this.goods = goods;
 		    this.agentTypes = agentTypes;

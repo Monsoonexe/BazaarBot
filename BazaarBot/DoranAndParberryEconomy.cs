@@ -23,16 +23,16 @@ namespace BazaarBot
 
         private MarketData GetMarketData()
         {
-            List<Good> goods = new List<Good>();
+            List<GoodStack> goods = new List<GoodStack>();
 	        List<AgentData>agentTypes = new List<AgentData>();
 	        List<AAgent> agents = new List<AAgent>();
 
-            goods.Add(new Good("food", 0.5));
-            goods.Add(new Good("wood", 1.0));
-            goods.Add(new Good("ore", 1.0));
-            goods.Add(new Good("metal", 1.0));
-            goods.Add(new Good("tools", 1.0));
-            goods.Add(new Good("work", 0.1));
+            goods.Add(new GoodStack(new Good("food"), 0.5));
+            goods.Add(new GoodStack(new Good("wood"), 1.0));
+            goods.Add(new GoodStack(new Good("ore"), 1.0));
+            goods.Add(new GoodStack(new Good("metal"), 1.0));
+            goods.Add(new GoodStack(new Good("tools"), 1.0));
+            goods.Add(new GoodStack(new Good("work"), 0.1));
 
             agentTypes.Add(new AgentData("farmer",100,"farmer"));
             agentTypes.Add(new AgentData("miner",100,"miner"));
@@ -41,43 +41,43 @@ namespace BazaarBot
             agentTypes.Add(new AgentData("blacksmith", 100, "blacksmith"));
             agentTypes.Add(new AgentData("worker", 10, "worker"));
 
-            InventoryData ii;
-            ii = new InventoryData(20, //farmer
-                new Dictionary<string,double>{{"food",0},{"tools",1},{"wood",3},{"work",3}},
-                new Dictionary<string,double>{{"food",1},{"tools",1},{"wood",0},{"work",0}},
-                null
-                );
-            agentTypes[0].inventory = ii; 
-            ii = new InventoryData(20, //miner
-                new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "ore", 0 } },
-                new Dictionary<string, double> { { "food", 1 }, { "tools", 1 }, { "ore", 0 } },
-                null
-                );
-            agentTypes[1].inventory = ii;
-            ii = new InventoryData(20, //refiner
-                new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "ore", 5 } },
-                new Dictionary<string, double> { { "food", 1 }, { "tools", 1 }, { "ore", 0 } },
-                null
-                );
-            agentTypes[2].inventory = ii;
-            ii = new InventoryData(20, //woodcutter
-                new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "wood", 0 } },
-                new Dictionary<string, double> { { "food", 1 }, { "tools", 1 }, { "wood", 0 } },
-                null
-                );
-            agentTypes[3].inventory = ii;
-            ii = new InventoryData(20, //blacksmith
-                new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "metal", 5 }, { "ore", 0 } },
-                new Dictionary<string, double> { { "food", 1 }, { "tools", 0 }, { "metal", 0 }, { "ore", 0 } },
-                null
-                );
-            agentTypes[4].inventory = ii;
-            ii = new InventoryData(20, //worker
-                new Dictionary<string, double> { { "food", 3 }  },
-                new Dictionary<string, double> { { "food", 1 } },
-                null
-                );
-            agentTypes[5].inventory = ii;
+            //InventoryData ii;
+            //ii = new InventoryData(20, //farmer
+            //    new Dictionary<string,double>{{"food",0},{"tools",1},{"wood",3},{"work",3}},
+            //    new Dictionary<string,double>{{"food",1},{"tools",1},{"wood",0},{"work",0}},
+            //    null
+            //    );
+            //agentTypes[0].inventory = ii; 
+            //ii = new InventoryData(20, //miner
+            //    new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "ore", 0 } },
+            //    new Dictionary<string, double> { { "food", 1 }, { "tools", 1 }, { "ore", 0 } },
+            //    null
+            //    );
+            //agentTypes[1].inventory = ii;
+            //ii = new InventoryData(20, //refiner
+            //    new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "ore", 5 } },
+            //    new Dictionary<string, double> { { "food", 1 }, { "tools", 1 }, { "ore", 0 } },
+            //    null
+            //    );
+            //agentTypes[2].inventory = ii;
+            //ii = new InventoryData(20, //woodcutter
+            //    new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "wood", 0 } },
+            //    new Dictionary<string, double> { { "food", 1 }, { "tools", 1 }, { "wood", 0 } },
+            //    null
+            //    );
+            //agentTypes[3].inventory = ii;
+            //ii = new InventoryData(20, //blacksmith
+            //    new Dictionary<string, double> { { "food", 3 }, { "tools", 1 }, { "metal", 5 }, { "ore", 0 } },
+            //    new Dictionary<string, double> { { "food", 1 }, { "tools", 0 }, { "metal", 0 }, { "ore", 0 } },
+            //    null
+            //    );
+            //agentTypes[4].inventory = ii;
+            //ii = new InventoryData(20, //worker
+            //    new Dictionary<string, double> { { "food", 3 }  },
+            //    new Dictionary<string, double> { { "food", 1 } },
+            //    null
+            //    );
+            //agentTypes[5].inventory = ii;
 
 
             int idc = 0;
@@ -114,28 +114,28 @@ namespace BazaarBot
 
 	    public override void signalBankrupt(Market m, AAgent a)
 	    {
-		    replaceAgent(m, a);
+		    ReplaceAgent(m, a);
 	    }
 
-	    private void replaceAgent(Market market, AAgent agent)
+	    private void ReplaceAgent(Market market, AAgent agent)
 	    {
-		    var bestClass = market.getMostProfitableAgentClass();
+		    var bestClass = market.GetMostProfitableAgentClass();
 
 		    //Special case to deal with very high demand-to-supply ratios
 		    //This will make them favor entering an underserved market over
 		    //Just picking the most profitable class
-		    var bestGood = market.getHottestGood();
+		    var bestGood = market.GetHottestGood();
 
-		    if (bestGood != "")
+		    if (bestGood != null)
 		    {
-			    var bestGoodClass = getAgentClassThatMakesMost(bestGood);
-			    if (bestGoodClass != "")
+			    var bestGoodClass = GetAgentClassThatMakesMost(bestGood);
+			    if (bestGoodClass != null)
 			    {
-				    bestClass = bestGoodClass;
+				    bestClass = new Good(bestGoodClass);
 			    }
 		    }
 
-		    var newAgent = getAgent(market.getAgentClass(bestClass));
+		    var newAgent = getAgent(market.GetAgentClass(bestClass));
 		    market.replaceAgent(agent, newAgent);
 	    }
 
@@ -165,15 +165,16 @@ namespace BazaarBot
 	     * @param	good
 	     * @return
 	     */
-	    public String getAgentClassThatMakesMost(String good)
+	    public String GetAgentClassThatMakesMost(Good good)
 	    {
+            //TODO - strongly type professions
             string res = "";
-		    if (good == "food" )      {res = "farmer";      }
-            else if (good == "wood")  { res = "woodcutter"; }
-            else if (good == "ore")   { res = "miner"; }
-            else if (good == "metal") {res = "refiner"; }
-            else if (good == "tools") { res = "blacksmith"; }
-            else if (good == "work") { res = "worker"; }
+		    if (good.ID == "food" )      {res = "farmer";      }
+            else if (good.ID == "wood")  { res = "woodcutter"; }
+            else if (good.ID == "ore")   { res = "miner"; }
+            else if (good.ID == "metal") {res = "refiner"; }
+            else if (good.ID == "tools") { res = "blacksmith"; }
+            else if (good.ID == "work") { res = "worker"; }
             return res;
 	    }
 

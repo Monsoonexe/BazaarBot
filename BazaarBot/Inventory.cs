@@ -9,40 +9,39 @@ namespace BazaarBot
 
 	    //private static var _index:Map<String, Commodity>;
 
-	    private Dictionary<string, Point>_stuff;		// key:commodity_id, val:amount, original_cost
-	    private Dictionary<string, double>_ideal;		// ideal counts for each thing
-	    private Dictionary<string, double>_sizes;		// how much space each thing takes up
-
+	    private Dictionary<Good, Point>_stuff;		// key:commodity_id, val:amount, original_cost
+	    private Dictionary<Good, double>_ideal;		// ideal counts for each thing
+	    private Dictionary<Good, double>_sizes;		// how much space each thing takes up
 
 	    public Inventory()
 	    {
-		    _sizes = new Dictionary<string, double>();
-		    _stuff = new Dictionary<string, Point>();
-		    _ideal = new Dictionary<string, double>();
+		    _sizes = new Dictionary<Good, double>();
+		    _stuff = new Dictionary<Good, Point>();
+		    _ideal = new Dictionary<Good, double>();
 		    maxSize = 0;
 	    }
 
 	    public void FromData(InventoryData data)
 	    {
-		    var sizes = new List<string>();
+		    var sizes = new List<Good>();
 		    var amountsp = new List<Point>();
-		    foreach (string key in data.start.Keys)
+		    foreach (Good key in data.start.Keys)
 		    {
 			    sizes.Add(key);
 			    amountsp.Add(new Point(data.start[key],0));
 		    }
 		    SetStuff(sizes, amountsp);
-		    sizes = new List<string>();
+		    sizes = new List<Good>();
 		    var amounts = new List<double>();
-		    foreach (string key in data.size.Keys)
+		    foreach (Good key in data.size.Keys)
 		    {
 			    sizes.Add(key);
 			    amounts.Add(data.size[key]);
 		    }
 		    setSizes(sizes, amounts);
-		    sizes = new List<string>();
+		    sizes = new List<Good>();
 		    amounts = new List<double>();
-		    foreach (string key in data.ideal.Keys)
+		    foreach (Good key in data.ideal.Keys)
 		    {
 			    sizes.Add(key);
 			    amounts.Add(data.ideal[key]);
@@ -51,38 +50,39 @@ namespace BazaarBot
 		    maxSize = data.maxSize;
 	    }
 
-	    public Inventory copy()
+	    public Inventory Copy()
 	    {
-		    var i = new Inventory();
+		    var inventory = new Inventory();
 		    var stufff = new List<Point>();
-		    var stuffi = new List<String>();
+		    var stuffi = new List<Good>();
 		    var idealf = new List<double>();
-		    var ideali = new List<String>();
+		    var ideali = new List<Good>();
 		    var sizesf = new List<double>();
-		    var sizesi = new List<String>();
-		    foreach (string key in _stuff.Keys)
+		    var sizesi = new List<Good>();
+
+		    foreach (Good key in _stuff.Keys)
 		    {
 			    stufff.Add(_stuff[key]);
 			    stuffi.Add(key);
 		    }
-		    foreach (string key in _ideal.Keys)
+		    foreach (Good key in _ideal.Keys)
 		    {
 			    idealf.Add(_ideal[key]);
 			    ideali.Add(key);
 		    }
-		    foreach (string key in _sizes.Keys)
+		    foreach (Good key in _sizes.Keys)
 		    {
 			    sizesf.Add(_sizes[key]);
 			    sizesi.Add(key);
 		    }
-		    i.SetStuff(stuffi, stufff);
-		    i.setIdeal(ideali, idealf);
-		    i.setSizes(sizesi, sizesf);
-		    i.maxSize = maxSize;
-		    return i;
+		    inventory.SetStuff(stuffi, stufff);
+		    inventory.setIdeal(ideali, idealf);
+		    inventory.setSizes(sizesi, sizesf);
+		    inventory.maxSize = maxSize;
+		    return inventory;
 	    }
 
-	    public void destroy()
+	    public void Destroy()
 	    {
             _stuff.Clear();
             _ideal.Clear();
@@ -98,7 +98,7 @@ namespace BazaarBot
 	     * @param	amounts_
 	     */
 
-	    public void SetStuff(IList<string>stuff, IList<Point>amounts)
+	    public void SetStuff(IList<Good> stuff, IList<Point>amounts)
 	    {
 		    for (int i=0; i<stuff.Count; i++)
 		    {
@@ -112,7 +112,7 @@ namespace BazaarBot
 	     * @param	amounts_
 	     */
 
-	    public void setIdeal(List<String>ideal, List<double>amounts)
+	    public void setIdeal(List<Good> ideal, List<double>amounts)
 	    {
 		    for (int i=0; i<ideal.Count; i++)
 		    {
@@ -120,7 +120,7 @@ namespace BazaarBot
 		    }
 	    }
 
-	    public void setSizes(List<String>sizes, List<double>amounts)
+	    public void setSizes(List<Good> sizes, List<double>amounts)
 	    {
 		    for(int i=0; i<sizes.Count; i++)
 		    {
@@ -134,7 +134,7 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double QueryQuantity(string good)
+	    public double QueryQuantity(Good good)
 	    {
 		    if (_stuff.ContainsKey(good))
 		    {
@@ -142,7 +142,7 @@ namespace BazaarBot
 		    }
 		    return 0;
 	    }
-        public double QueryCost(string good)
+        public double QueryCost(Good good)
         {
             if (_stuff.ContainsKey(good))
             {
@@ -151,7 +151,7 @@ namespace BazaarBot
             return 0;
         }
 
-	    public double GetIdealValue(string good)
+	    public double GetIdealValue(Good good)
 	    {
 		    if (_ideal.ContainsKey(good))
 		    {
@@ -168,7 +168,7 @@ namespace BazaarBot
 	    public double GetUsedSpace()
 	    {
 		    double space_used = 0;
-		    foreach (string key in _stuff.Keys)
+		    foreach (Good key in _stuff.Keys)
 		    {
                 if (_sizes.TryGetValue(key, out var amt))
 					space_used += _stuff[key].x * amt;
@@ -176,7 +176,7 @@ namespace BazaarBot
 		    return space_used;
 	    }
 
-	    public double GetCapacityFor(string good)
+	    public double GetCapacityFor(Good good)
 	    {
 		    if (_sizes.ContainsKey(good))
 		    {
@@ -191,7 +191,7 @@ namespace BazaarBot
 	     * @param	delta_ amount added
 	     */
 
-	    public double change(string good, double delta, double unit_cost)
+	    public double Change(Good good, double delta, double unit_cost)
 	    {
 		    Point result = new Point(0,0);
 
@@ -239,7 +239,7 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double Surplus(string good)
+	    public double Surplus(Good good)
 	    {
 		    var amt = QueryQuantity(good);
             double ideal = 0;
@@ -258,7 +258,7 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double Shortage(string good)
+	    public double Shortage(Good good)
 	    {
 		    if (!_stuff.ContainsKey(good))
 		    {

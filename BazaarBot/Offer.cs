@@ -1,25 +1,22 @@
-﻿using System;
-
+﻿
 namespace BazaarBot
 {
     public struct Offer
     {
-	    public string good;
+	    public Good good;
 	    public double units;			//how many units
 	    public double unit_price;	//price per unit
 	    public int agent_id;		//who offered this
 
-	    public Offer(int agent_id_=-1,String commodity_="",double units_=1.0,double unit_price_=1.0)
+	    public Offer(int agent_id, Good good, double units, double unit_price)
 	    {
-		    agent_id = agent_id_;
-		    good = commodity_;
-		    units = units_;
-		    unit_price = unit_price_;
+		    this.agent_id = agent_id;
+		    this.good = good;
+		    this.units = units;
+		    this.unit_price = unit_price;
 	    }
 
-	    public String toString()
-	    {
-		    return "("+agent_id + "): " + good + "x " + units + " @ " + unit_price;
-	    }
+	    public override string ToString()
+		    =>  $"({agent_id}): {good} x {units} @ {unit_price}";
     }
 }

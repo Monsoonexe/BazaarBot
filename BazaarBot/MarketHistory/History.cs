@@ -18,7 +18,7 @@ namespace BazaarBot.MarketHistory
 		    Profit = new HistoryLog(EconNoun.Profit);
 	    }
 
-	    public void Register(string good)
+	    public void Register(Good good)
 	    {
 		    Prices.Register(good);
 		    Asks.Register(good);

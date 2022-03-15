@@ -20,40 +20,41 @@ namespace BazaarBot.Agents
 	    {
 	    }
 
-		public override Offer? CreateBid(Market bazaar, String good, double limit)
+		public override Offer? CreateBid(Market bazaar, GoodStack stack)
 	    {
+			double limit = stack.Quantity;
             var bidPrice = 0;// determinePriceOf(good);  bids are now made "at market", no price determination needed //TODO - fix broken, hanging logic
-		    var ideal = DeterminePurchaseQuantity(bazaar, good);
+		    var ideal = DeterminePurchaseQuantity(bazaar, stack.Good);
 
 		    //can't buy more than limit
 		    double quantityToBuy = ideal > limit ? limit : ideal;
 		    if (quantityToBuy > 0)
 		    {
-			    return new Offer(ID, good, quantityToBuy, bidPrice);
+			    return new Offer(ID, stack.Good, quantityToBuy, bidPrice);
 		    }
 		    return null;
 	    }
 
-	    override public Offer? CreateAsk(Market bazaar, String commodity_, double limit_)
+		public override Offer? CreateAsk(Market bazaar, GoodStack stack)
 	    {
-		    var ask_price = _inventory.QueryCost(commodity_) * ProfitMarginFactor; //asks are fair prices:  costs + small profit
+		    var ask_price = _inventory.QueryCost(stack.Good) * ProfitMarginFactor; //asks are fair prices:  costs + small profit
 
-            var quantity_to_sell = _inventory.QueryQuantity(commodity_);//put asks out for all inventory
+            var quantity_to_sell = _inventory.QueryQuantity(stack.Good);//put asks out for all inventory
             nProduct = quantity_to_sell; //TODO - overwrite? maybe subtract?
 
 		    if (quantity_to_sell > 0)
 		    {
-			    return new Offer(ID, commodity_, quantity_to_sell, ask_price);
+			    return new Offer(ID, stack.Good, quantity_to_sell, ask_price);
 		    }
 		    return null;
 	    }
 
-	    override public void GenerateOffers(Market bazaar, string commodity)
+	    public override void GenerateOffers(Market bazaar, Good commodity)
 	    {
 		    Offer? offer;
 		    if (_inventory.Surplus(commodity) >= 1) //surplus
 		    {
-			     offer = CreateAsk(bazaar, commodity, 1);
+			     offer = CreateAsk(bazaar, new GoodStack(commodity, 1));
 			     if (offer != null)
 			     {
 				    bazaar.Ask(offer.Value);
@@ -79,7 +80,7 @@ namespace BazaarBot.Agents
 
 				    if (limit > 0)
 				    {
-					    offer = CreateBid(bazaar, commodity, limit);
+					    offer = CreateBid(bazaar, new GoodStack(commodity, limit));
 					    if (offer != null)
 					    {
 						    bazaar.Bid(offer.Value);
@@ -89,12 +90,12 @@ namespace BazaarBot.Agents
 		    }
 	    }
 
-	    override public void UpdatePriceModel(Market bazaar, string act, string good, bool success, double unitPrice= 0)
+		public override void UpdatePriceModel(Market bazaar, string act, Good good, bool success, double unitPrice= 0)
 	    {
 		    if (success)
 		    {
 				//Add this to my list of observed trades
-				List<double> observed_trades = _observedTradingRange[good];
+				List<double> observed_trades = observedTradingRange[good];
 			    observed_trades.Add(unitPrice);
 		    }
 
