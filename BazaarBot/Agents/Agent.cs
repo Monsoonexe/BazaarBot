@@ -23,7 +23,7 @@ namespace BazaarBot.Agents
 		public override Offer? CreateBid(Market bazaar, String good, double limit)
 	    {
             var bidPrice = 0;// determinePriceOf(good);  bids are now made "at market", no price determination needed //TODO - fix broken, hanging logic
-		    var ideal = determinePurchaseQuantity(bazaar, good);
+		    var ideal = DeterminePurchaseQuantity(bazaar, good);
 
 		    //can't buy more than limit
 		    double quantityToBuy = ideal > limit ? limit : ideal;

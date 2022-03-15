@@ -12,7 +12,7 @@ namespace BazaarBot
         void signalBankrupt(Market m, AAgent agent);
     }
 
-    class Market
+    internal class Market
     {
 	    public string name;
 
@@ -50,7 +50,7 @@ namespace BazaarBot
 
 	    public void init(MarketData data)
 	    {
-		    fromData(data);
+		    FromData(data);
 	    }
 
 	    public int numTypesOfGood()
@@ -71,7 +71,6 @@ namespace BazaarBot
 		    newAgent.Init(this);
 	    }
 
-	    //@:access(bazaarbot.agent.BasicAgent)    //dfs stub ????
 	    public void Simulate(int rounds)
 	    {
 		    for (int round=0; round<rounds; round++)
@@ -89,7 +88,7 @@ namespace BazaarBot
 
 			    foreach (var commodity in _goodTypes)
 			    {
-				    resolveOffers(commodity);
+				    ResolveOffers(commodity);
 			    }
                 var del = new List<AAgent>();
 			    foreach (var agent in _agents)
@@ -122,7 +121,7 @@ namespace BazaarBot
 	     * @return
 	     */
 
-	    public double GetAverageHistoricalPrice(String good, int range)
+	    public double GetAverageHistoricalPrice(string good, int range)
 	    {
 		    return history.Prices.Average(good, range);
 	    }
@@ -189,17 +188,16 @@ namespace BazaarBot
 		    return best_good;
 	    }
 
-	    /**
-	     * Returns the good that has the highest average price over the given range of time
-	     * @param	range how many rounds to look back
-	     * @param	exclude goods to exclude
-	     * @return
-	     */
-
-	    public String getDearestGood(int range, List<String> exclude= null)
+		/// <summary>
+		/// Returns the good that has the highest average price over the given range of time.
+		/// </summary>
+		/// <param name="range">how many rounds to look back</param>
+		/// <param name="exclude">goods to exclude</param>
+		/// <returns></returns>
+		public string GetDearestGood(int range, List<String> exclude= null)
 	    {
 		    double best_price = 0;
-		    String best_good = "";
+		    string best_good = "";
 		    foreach (var g in _goodTypes)
 		    {
 			    if (exclude == null || !exclude.Contains(g))
@@ -349,7 +347,7 @@ namespace BazaarBot
 
 	    /********PRIVATE*********/
 
-	    private void fromData(MarketData data)
+	    private void FromData(MarketData data)
 	    {
 		    //Create commodity index
 		    foreach (var g in data.goods)
@@ -389,10 +387,9 @@ namespace BazaarBot
 			    _agents.Add(agent);
 			    agentIndex++;
 		    }
-
 	    }
 
-	    private void resolveOffers(String good= "")
+	    private void ResolveOffers(string good= "")
 	    {
 		    var bids = _book.bids[good];
 		    var asks = _book.asks[good];
@@ -400,8 +397,8 @@ namespace BazaarBot
 			bids.Shuffle();
 			asks.Shuffle();
 
-			//bids.Sort(Quick.sortOfferDecending); //highest buying price first
-			asks.Sort(Quick.sortOfferAcending); //lowest selling price first
+			bids.Sort(Quick.sortOfferDecending); //highest buying price first
+			//asks.Sort(Quick.sortOfferAcending); //lowest selling price first
 
 		    int successfulTrades = 0;		//# of successful trades this round
 		    double moneyTraded = 0;			//amount of money traded this round
@@ -425,11 +422,11 @@ namespace BazaarBot
 		    //march through and try to clear orders
 		    while (bids.Count > 0 && asks.Count > 0)		//while both books are non-empty
 		    {
-			    var buyer = bids[0];
-			    var seller = asks[0];
+			    Offer buyer = bids.Last();
+			    Offer seller = asks.Last();
 
-			    var quantity_traded = (double)Math.Min(seller.units, buyer.units);
-                var clearing_price = seller.unit_price; //Quick.avgf(seller.unit_price, buyer.unit_price);
+			    double quantity_traded = Math.Min(seller.units, buyer.units);
+                double clearing_price = seller.unit_price; //Quick.avgf(seller.unit_price, buyer.unit_price);
 
                 //if (buyer.unit_price < seller.unit_price)
                 //    break;
@@ -440,8 +437,8 @@ namespace BazaarBot
 				    seller.units -= quantity_traded;
 				    buyer.units -= quantity_traded;
 
-				    transferGood(good, quantity_traded, seller.agent_id, buyer.agent_id, clearing_price);
-				    transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
+				    TransferGood(good, quantity_traded, seller.agent_id, buyer.agent_id, clearing_price);
+				    TransferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
 
 				    //update agent price beliefs based on successful transaction
 				    var buyer_a = _agents[buyer.agent_id];
@@ -457,12 +454,12 @@ namespace BazaarBot
 
 			    if (seller.units == 0)		//seller is out of offered good
 			    {
-				    asks.RemoveAt(0); //.splice(0, 1);		//remove ask
+				    asks.RemoveLast(); //.splice(0, 1);		//remove ask
 				    failsafe = 0;
 			    }
 			    if (buyer.units == 0)		//buyer is out of offered good
 			    {
-				    bids.RemoveAt(0);//.splice(0, 1);		//remove bid
+				    bids.RemoveLast();//.splice(0, 1);		//remove bid
 				    failsafe = 0;
 			    }
 
@@ -470,7 +467,8 @@ namespace BazaarBot
 
 			    if (failsafe > 1000)
 			    {
-				    Console.WriteLine("BOINK!");
+				    Console.WriteLine($"Failsafe hit after {failsafe} iterations!");
+					break;
 			    }
 		    }
 
@@ -478,17 +476,15 @@ namespace BazaarBot
 		    //update price belief models based on unsuccessful transaction
 		    while (bids.Count > 0)
 		    {
-			    var buyer = bids[0];
-			    var buyer_a = _agents[buyer.agent_id];
+				Offer buyer = bids.GetRemoveLast();
+				AAgent buyer_a = _agents[buyer.agent_id];
 			    buyer_a.UpdatePriceModel(this,"buy",good, false);
-			    bids.RemoveAt(0);//.splice(0, 1);
 		    }
             while (asks.Count > 0)
 		    {
-			    var seller = asks[0];
+			    var seller = asks.GetRemoveLast();
 			    var seller_a = _agents[seller.agent_id];
 			    seller_a.UpdatePriceModel(this,"sell",good, false);
-                asks.RemoveAt(0);// splice(0, 1);
 		    }
 
 		    //update history
@@ -542,7 +538,7 @@ namespace BazaarBot
 
 	    }
 
-	    private void transferGood(String good, double units, int seller_id, int buyer_id, double clearing_price)
+	    private void TransferGood(string good, double units, int seller_id, int buyer_id, double clearing_price)
 	    {
 		    var seller = _agents[seller_id];
 		    var  buyer = _agents[buyer_id];
@@ -550,7 +546,7 @@ namespace BazaarBot
 		     buyer.changeInventory(good,  units, clearing_price);
 	    }
 
-	    private void transferMoney(double amount, int seller_id, int buyer_id)
+	    private void TransferMoney(double amount, int seller_id, int buyer_id)
 	    {
 		    var seller = _agents[seller_id];
 		    var  buyer = _agents[buyer_id];

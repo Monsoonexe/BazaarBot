@@ -98,21 +98,20 @@ namespace BazaarBot.Agents
 
 		public abstract void UpdatePriceModel(Market bazaar, String act, String good, bool success, double unitPrice = 0);
 
-
 		public abstract Offer? CreateBid(Market bazaar, String good, double limit);
 
 		public abstract Offer? CreateAsk(Market bazaar, String commodity_, double limit_);
 
 	    public double QueryQuantity(string good) => _inventory.QueryQuantity(good);
 
-	    public void produceInventory(String good, double delta)
+	    public void ProduceInventory(String good, double delta)
 	    {
             if (trackcosts < 1) trackcosts = 1;
             double curunitcost = _inventory.change(good, delta, trackcosts / delta);
             trackcosts = 0;
 	    }
 
-        public void consumeInventory(String good, double delta)
+        public void ConsumeInventory(String good, double delta)
         {
             if (good == "money")
             {
@@ -142,12 +141,6 @@ namespace BazaarBot.Agents
 
 	    /********PRIVATE************/
 
-
-	    private double get_inventorySpace()
-	    {
-		    return _inventory.GetEmptySpace();
-	    }
-
 	    public bool get_inventoryFull()
 	    {
 		    return _inventory.GetEmptySpace() == 0;
@@ -155,20 +148,21 @@ namespace BazaarBot.Agents
 
 	    public double get_profit()
 	    {
-		    return Money - moneyLastRound;
+		    return profit = Money - moneyLastRound;
 	    }
 
 	    protected double determineSaleQuantity(Market bazaar, String commodity_)
 	    {
 		    var mean = bazaar.GetAverageHistoricalPrice(commodity_,_lookback); //double
-		    var trading_range = observeTradingRange(commodity_,10);//point
+		    var trading_range = ObserveTradingRange(commodity_,10);//point
 		    if (trading_range != null && mean>0)
 		    {
 			    var favorability= Quick.positionInRange(mean, trading_range.Value.x, trading_range.Value.y);//double
 			    //position_in_range: high means price is at a high point
 
+				//TODO - fix logic
 			    double amount_to_sell = Math.Round(favorability * _inventory.Surplus(commodity_)); //double
-amount_to_sell = _inventory.QueryQuantity(commodity_);
+				amount_to_sell = _inventory.QueryQuantity(commodity_);
 			    if (amount_to_sell < 1)
 			    {
 				    amount_to_sell = 1;
@@ -178,10 +172,10 @@ amount_to_sell = _inventory.QueryQuantity(commodity_);
 		    return 0;
 	    }
 
-        protected double determinePurchaseQuantity(Market bazaar, string commodity_)
+        protected double DeterminePurchaseQuantity(Market bazaar, string commodity_)
 	    {
-		    var mean = bazaar.GetAverageHistoricalPrice(commodity_,_lookback);//double
-		    var trading_range = observeTradingRange(commodity_,10); //Point
+		    var mean = bazaar.GetAverageHistoricalPrice(commodity_, _lookback);//double
+		    var trading_range = ObserveTradingRange(commodity_, 10); //Point
 		    if (trading_range != null)
 		    {
 			    var favorability = Quick.positionInRange(mean, trading_range.Value.x, trading_range.Value.y);//double
@@ -198,12 +192,11 @@ amount_to_sell = _inventory.QueryQuantity(commodity_);
 		    return 0;
 	    }
 
-	    private Point? observeTradingRange(String good, int window)
+	    private Point? ObserveTradingRange(String good, int window)
 	    {
 		    var a = _observedTradingRange[good]; //List<double>
 		    var pt = new Point(Quick.minArr(a,window), Quick.maxArr(a,window));
 		    return pt;
 	    }
     }
-
 }

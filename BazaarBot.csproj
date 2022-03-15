@@ -91,6 +91,7 @@
     <Compile Include="BazaarBot\ConstStrings.cs" />
     <Compile Include="BazaarBot\Economy.cs" />
     <Compile Include="BazaarBot\Good.cs" />
+    <Compile Include="BazaarBot\GoodStack.cs" />
     <Compile Include="BazaarBot\MarketHistory\EconNoun.cs" />
     <Compile Include="BazaarBot\MarketHistory\History.cs" />
     <Compile Include="BazaarBot\Inventory.cs" />

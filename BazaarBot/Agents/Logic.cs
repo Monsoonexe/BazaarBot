@@ -25,7 +25,7 @@ namespace BazaarBot.Agents
 	    {
 		    if (chance >= 1.0 || Quick.rnd.NextDouble() < chance)
 		    {
-			    agent.produceInventory(commodity, amount);
+			    agent.ProduceInventory(commodity, amount);
 		    }
 	    }
 
@@ -40,7 +40,7 @@ namespace BazaarBot.Agents
                 //}
                 //else
                 //{
-				    agent.consumeInventory(commodity, -amount);
+				    agent.ConsumeInventory(commodity, -amount);
                 //}
 		    }
 	    }
