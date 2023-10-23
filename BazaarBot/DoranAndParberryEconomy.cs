@@ -169,12 +169,12 @@ namespace BazaarBot
 	    {
             //TODO - strongly type professions
             string res = "";
-		    if (good.ID == "food" )      {res = "farmer";      }
-            else if (good.ID == "wood")  { res = "woodcutter"; }
-            else if (good.ID == "ore")   { res = "miner"; }
-            else if (good.ID == "metal") {res = "refiner"; }
-            else if (good.ID == "tools") { res = "blacksmith"; }
-            else if (good.ID == "work") { res = "worker"; }
+		    if (good.Id == "food" )      {res = "farmer";      }
+            else if (good.Id == "wood")  { res = "woodcutter"; }
+            else if (good.Id == "ore")   { res = "miner"; }
+            else if (good.Id == "metal") {res = "refiner"; }
+            else if (good.Id == "tools") { res = "blacksmith"; }
+            else if (good.Id == "work") { res = "worker"; }
             return res;
 	    }
 

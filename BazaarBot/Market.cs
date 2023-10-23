@@ -234,7 +234,7 @@ namespace BazaarBot
 	    }
 
 	    public AgentData GetAgentClass(Good good)
-		    => _mapAgents[good.ID];
+		    => _mapAgents[good.Id];
 
 		/// <summary>
 		/// Get the <see cref="Good"/>s that an <see cref="Agent"/> uses.
@@ -334,11 +334,11 @@ namespace BazaarBot
 		    foreach (var stack in data.goods)
 		    {
 			    goodTypes.Add(stack.Good);
-			    _mapGoods[stack.Good.ID] = new GoodStack(stack.Good, stack.Quantity);
+			    _mapGoods[stack.Good.Id] = new GoodStack(stack.Good, stack.Quantity);
 
                 double v = 1.0;
-                if (stack.Good.ID == "metal") v = 2.0;
-                if (stack.Good.ID == "tools") v = 3.0;
+                if (stack.Good.Id == "metal") v = 2.0;
+                if (stack.Good.Id == "tools") v = 3.0;
 
 			    history.Register(stack.Good);
                 history.Prices.Add(stack.Good, v);	//start the bidding at $1!

@@ -8,31 +8,25 @@ namespace BazaarBot
     public class Good : ICloneable, IEquatable<Good>
     {
 		/// <summary>
-		/// Cached hash property to speed up dictionary hits.
-		/// </summary>
-		private readonly int hashCode;
-
-		/// <summary>
 		/// Human-readable identifier.
 		/// </summary>
-	    public string ID { get; protected set; }
+	    public UniqueId Id { get; protected set; }
 
-	    public Good (string id)
+	    public Good (UniqueId id)
 	    {
-		    ID = id;
-			hashCode = ID.GetHashCode();
+		    Id = id;
 	    }
 
-	    public object Clone() => new Good(ID);
+	    public object Clone() => new Good(Id);
 
 		public Good Copy() => Clone() as Good;
 
-		public bool Equals(Good other)
-			=> hashCode == other.hashCode;
+        public bool Equals(Good other)
+			=> other != null && Id == other.Id;
 
-		public override bool Equals(object obj)
+        public override bool Equals(object obj)
 			=> obj is Good other && Equals(other);
 
-		public override int GetHashCode() => hashCode;
+		public override int GetHashCode() => Id.GetHashCode();
 	}
 }

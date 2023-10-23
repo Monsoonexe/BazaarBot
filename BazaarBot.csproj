@@ -107,6 +107,8 @@
     <Compile Include="BazaarBot\Point.cs" />
     <Compile Include="BazaarBot\Quick.cs" />
     <Compile Include="BazaarBot\TradeBook.cs" />
+    <Compile Include="BazaarBot\Utilities\StringExtensions.cs" />
+    <Compile Include="BazaarBot\Utilities\UniqueId.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

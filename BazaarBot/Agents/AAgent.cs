@@ -120,7 +120,7 @@ namespace BazaarBot.Agents
 
 		public void ConsumeInventory(Good good, double delta)
 		{
-			if (good.ID == "money")
+			if (good.Id == "money")
 			{
 				Money += delta;
 				if (delta < 0)
@@ -139,7 +139,7 @@ namespace BazaarBot.Agents
 
 		public void ChangeInventory(Good good, double delta, double unit_cost)
 		{
-			if (good.ID == "money")
+			if (good.Id == "money")
 			{
 				Money += delta;
 			}
