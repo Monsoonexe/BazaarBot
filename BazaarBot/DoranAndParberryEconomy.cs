@@ -201,13 +201,7 @@ namespace BazaarBot
 		    return bestClass;
 	    }
 	    */
-
-        //private BasicAgent getAgentScript(AgentData data)
-        //{
-        //    data.logic = new LogicScript(data.logicName+".hs");
-        //    return new Agent(0, data);
-        //}
-
+        
         private AAgent getAgent(AgentData data)
         {
             data.logic = getLogic(data.LogicName);

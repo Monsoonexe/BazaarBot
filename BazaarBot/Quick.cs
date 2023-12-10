@@ -8,12 +8,11 @@ namespace BazaarBot
 {
     class Quick
     {
-        public static Random rnd = new Random();
-
+        public static readonly Random rnd = new Random();
 
         public static double avgf(double a, double b)
         {
-            return (a + b) / 2;
+            return (a + b) * 0.5;
         }
 
         public static double minArr(List<double> a, int window)
